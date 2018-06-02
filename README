@@ -1,0 +1,21 @@
+What is libdzf?
+---------------
+libdzf is an embeddable, type-independent, common data structures library based on C99 std.
+
+One of the most difficulties in C programming is to implement data structures with Generic Programming concept, such as template in C++. 
+That is why this began and is like a challenge. Because C does not support Object-Oriented Programming or Generic Programming. 
+But we can make an workaround with preprocessor tricks. So implemented library is basically based on #define directive and those tricks.
+
+
+Documentation
+-------------
+Prerequirements:
+- Doxygen
+
+$ cd doc
+$ make
+
+
+Contributors
+------------
+- Yi-Soo An

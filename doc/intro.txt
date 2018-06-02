@@ -1,0 +1,72 @@
+/*! @mainpage libdzf
+ *
+ * @section intro_sec Introduction
+ * **libdzf** is an embeddable, type-independent common  data structures library based on C99 std.
+ *
+ * One of the most difficulties in C programming is to implement data structures with Generic Programming concept, such as template in C++.  
+ * That is why this began and is like a challenge. Because C does not support Object-Oriented Programming or Generic Programming.  
+ * But we can make an workaround with preprocessor tricks. So implemented library is basically based on #define directive and those tricks.
+ *
+ * Implemented:
+ * - Vector
+ * - Stack
+ * - Queue
+ * 
+ * Tested:
+ * - GCC 8.1.0
+ * - Clang 6.1.0
+ *
+ * Github : https://github.com/memnoth/libdzf  
+ * Issue  : https://github.com/memnoth/libdzf/issues
+ * 
+ * 
+ * 
+ * @section usage_sec Usage
+ * #### 1. How to use the APIs.
+ * Please, take a look at ``examples/main.c``
+ * 
+ * #### 2. Compile options for examples/main.c.
+ * 
+ * ```
+ * CFLAGS=-Wall -Wpedantic -std=c99 -g
+ * ```
+ * 
+ * #### 3. How to check memory errors, like leaks.
+ * 
+ * ```
+ * $ cd examples
+ * $ make clean; make
+ * $ make memcheck
+ * ```
+ * 
+ * #### 4. Turn off debug message and assert.
+ * 1. dzf debug message.
+ * ```
+ *  $ gcc ... -DDZF_DEBUG ...
+ * ```
+ * 2. assert.
+ * ```
+ *  $ gcc ... -DNDEBUG ...
+ * ```
+ * 
+ * 
+ * @section way_to_analyze_sec Way to analyze library
+ * References:
+ * - C Programming: A Modern Approach by K.N.King
+ * - C99 std, N1256
+ * - Data Structures and Algorithms Made Easy: Data Structures and Algorithmic Puzzles by Narasimha Karumanchi
+ * 
+ * Also, lots of tricks of it depend on:
+ * - Sequence points and side-effects.
+ * - Difference between statement and expression.
+ * - ``, (Comma)`` operator.
+ * - ``for`` loop syntax.
+ * 
+ * You must know them very well.  
+ * FYI that macro functions with prefix, ``_dzf``, are private scope, do not try to access them directly.
+ * 
+ * 
+ * @section contributors_sec Contributors
+ * - Yi-Soo An (https://github.com/memnoth)
+ * 
+ */
