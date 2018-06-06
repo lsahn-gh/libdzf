@@ -1,6 +1,7 @@
 CC=cc
-CFLAGS=-Wall -Wpedantic -std=c99 -g -I../include -DDZF_DEBUG
-LIBS=
+CFLAGS=-Wall -Wpedantic -std=c99 -g -I./ -I../include -DDZF_DEBUG
+
+LIBS=test_stack.c test_vector.c test_queue.c
 
 all: main
 
@@ -17,4 +18,4 @@ clang:
 		clang ${CFLAGS} -o main main.c ${LIBS}
 
 clean:
-		rm -f main ${LIBS} vgcore.* core.*
+		rm -f main vgcore.* core.*

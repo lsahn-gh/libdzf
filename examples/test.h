@@ -21,24 +21,16 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/*! @file main.c
- *
- * @brief Test cases for APIs.
- * 
- * @details
- * Please take a look at source file, \b examples/main.c
- */
+#ifndef __DZF_TEST_H__
+#define __DZF_TEST_H__
 
-#include "test.h"
+#include <assert.h>
+#include "dzf/dzf.h"
 
-int
-main(int argc, char **argv)
-{
-    vector_main();
+#define border(header) printf("\n--------------" header "---------------\n")
 
-    stack_main();
+void stack_main(void);
+void vector_main(void);
+void queue_main(void);
 
-    queue_main();
-
-    return 0;
-}
+#endif

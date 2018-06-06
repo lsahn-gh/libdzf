@@ -86,7 +86,7 @@
  * @return None
  */
 #define _dzf_vec_priv_extend(_vecptr) \
-    ( (dzf_vec_cap(_vecptr) == dzf_vec_size(_vecptr)) ? \
+    ( dzf_vec_is_full(_vecptr) ? \
       ( dzf_realloc( \
             (_vecptr)->data, (_vecptr)->data, \
             dzf_sizeof(_vecptr) * (dzf_vec_cap(_vecptr) * 2) ), \
@@ -109,15 +109,27 @@
 
 
 /*
- * Check the _idx is out of index.
+ * Check whether the index is out of index or not.
  *
  * If it is out of index, exception of assert raises.
  *
  * @param _vecptr: A pointer to the dzf_vec_t(T).
  * @return None
  */
-#define _dzf_vec_idx_chk(_vecptr, _idx) \
+#define _dzf_vec_priv_idx_chk(_vecptr, _idx) \
     assert(_idx >= 0 && _idx < dzf_vec_size(_vecptr))
+
+
+/*
+ * Get/Set a value at the index without care of type.
+ * 
+ * This is as Getter and Setter.
+ * 
+ * @param _vecptr: A pointer to the dzf_vec_t(T).
+ * @return \c T typed data.
+ */
+#define _dzf_vec_priv_at(_vecptr, _idx) \
+    ((_vecptr)->data[_idx])
 
 
 /*!
@@ -174,14 +186,35 @@
 
 
 /*!
+ * Check whether it is full or not.
+ * 
+ * @param _vecptr: A pointer to the dzf_vec_t(T).
+ * @return TRUE if it is full, or FALSE.
+ */
+#define dzf_vec_is_full(_vecptr) \
+    ( dzf_vec_cap(_vecptr) == dzf_vec_size(_vecptr) ? TRUE : FALSE ) 
+
+
+/*!
  * Return \c T typed data at the index.
  * 
  * @param _vecptr: A pointer to the dzf_vec_t(T).
  * @param _idx: An index of the vector.
- * @return \c T typed data at _idx.
+ * @return \c T typed data at the index.
  */
-#define dzf_vec_at(_vecptr, _idx) \
-    ( _dzf_vec_idx_chk(_vecptr, _idx), (_vecptr)->data[_idx] )
+#define dzf_vec_get_val_at(_vecptr, _idx) \
+    ( _dzf_vec_priv_idx_chk(_vecptr, _idx), _dzf_vec_priv_at(_vecptr, _idx) )
+
+
+/*!
+ * Return a pointer to \c T typed data at the index.
+ * 
+ * @param _vecptr: A pointer to the dzf_vec_t(T).
+ * @param _idx: An index of the vector.
+ * @return A pointer to \c T typed data at the index.
+ */
+#define dzf_vec_get_ptr_at(_vecptr, _idx) \
+    ( _dzf_vec_priv_idx_chk(_vecptr, _idx), &_dzf_vec_priv_at(_vecptr, _idx) )
 
 
 /*!
@@ -193,8 +226,8 @@
  * @return None
  */
 #define dzf_vec_set(_vecptr, _idx, value) \
-    for ( _dzf_vec_idx_chk(_vecptr, _idx), \
-          (_vecptr)->data[_idx] = value; \
+    for ( _dzf_vec_priv_idx_chk(_vecptr, _idx), \
+          _dzf_vec_priv_at(_vecptr, _idx) = value; \
           FALSE; /* must be false not to loop. */ )
 
 
@@ -207,7 +240,7 @@
  */
 #define dzf_vec_add(_vecptr, value) \
     for ( _dzf_vec_priv_extend(_vecptr), \
-          (_vecptr)->data[dzf_vec_size(_vecptr)] = value, \
+          _dzf_vec_priv_at(_vecptr, dzf_vec_size(_vecptr)) = value, \
           ++dzf_vec_size(_vecptr); \
           FALSE; )
 
@@ -222,10 +255,10 @@
  * @return None
  */
 #define dzf_vec_rmv(_vecptr, _idx) \
-    for ( int i = (_dzf_vec_idx_chk(_vecptr, _idx), _idx); \
+    for ( int i = (_dzf_vec_priv_idx_chk(_vecptr, _idx), _idx); \
           (i < dzf_vec_size(_vecptr) - 1) \
              ? TRUE : (--dzf_vec_size(_vecptr), FALSE); \
-          ((_vecptr)->data[i] = (_vecptr)->data[i+1]), ++i )
+          (_dzf_vec_priv_at(_vecptr, i) = _dzf_vec_priv_at(_vecptr, i+1)), ++i )
 
 
 /*!
@@ -239,7 +272,7 @@
 #define dzf_vec_foreach(_vecptr, _fptr, ...) \
     for ( int i = 0; \
           i < dzf_vec_size(_vecptr); \
-          (_fptr)(&((_vecptr)->data[i]), __VA_ARGS__), ++i )
+          (_fptr)(&_dzf_vec_priv_at(_vecptr, i), __VA_ARGS__), ++i )
 
 
 #endif
