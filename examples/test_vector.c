@@ -22,6 +22,7 @@
  */
 
 #include "test.h"
+#include "dzf/dzf.h"
 
 static void vector_string_type(void);
 static void vector_double_type(void);

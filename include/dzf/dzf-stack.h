@@ -98,7 +98,6 @@
         dzf_stack_cap(_stkptr) = dzf_stack_cap(_stkptr) * 2 \
       ) : 0 )
 
-
 /*!
  * Initialize a stack with default capacity, 8 (DFLT_STACK_CAP).
  * 
@@ -109,13 +108,16 @@
  */
 #define dzf_stack_new(_stkptr) \
     _dzf_stack_priv_init(_stkptr, DFLT_STACK_CAP)
-#else
+
+#else /* else part of DZF_DYNAMIC_STACK. */
+
 /*
  * If \b DZF_DYNAMIC_STACK is off, _dzf_stack_priv_extend will be as
  * static stack and check the stack is full, or not.
  */
 # define    _dzf_stack_priv_extend(_stkptr) \
     assert(dzf_stack_is_full(_stkptr) == FALSE)
+
 #endif
 
 
@@ -173,7 +175,7 @@
 
 
 /*!
- * Check it is empty or not.
+ * Check whether it is empty or not.
  * 
  * @param _stkptr: A pointer to the dzf_stack_t(T).
  * @return TRUE if it is empty, or FALSE.
@@ -183,7 +185,7 @@
 
 
 /*!
- * Check it is full or not.
+ * Check whether it is full or not.
  * 
  * @param _stkptr: A pointer to the dzf_stack_t(T).
  * @return TRUE if it is full, or FALSE.
@@ -200,11 +202,10 @@
  * @return None
  */
 #define dzf_stack_push(_stkptr, value) \
-    for ( \
-         _dzf_stack_priv_extend(_stkptr), \
-         ++_dzf_stack_top(_stkptr), \
-         (_stkptr)->data[_dzf_stack_top(_stkptr)] = value; \
-         FALSE; /* must be false not to loop. */ )
+    for ( _dzf_stack_priv_extend(_stkptr), \
+          ++_dzf_stack_top(_stkptr), \
+          (_stkptr)->data[_dzf_stack_top(_stkptr)] = value; \
+          FALSE; /* must be false not to loop. */ )
 
 
 /*!

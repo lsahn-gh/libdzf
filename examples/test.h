@@ -24,8 +24,8 @@
 #ifndef __DZF_TEST_H__
 #define __DZF_TEST_H__
 
+#include <stdio.h>
 #include <assert.h>
-#include "dzf/dzf.h"
 
 #define border(header) printf("\n--------------" header "---------------\n")
 
