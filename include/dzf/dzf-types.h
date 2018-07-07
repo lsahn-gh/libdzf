@@ -45,10 +45,10 @@
  * 
  * \b Examples
  * @code{.c}
- *   // Let's build a few types.
+ *   // Let's build three types.
  *   typedef dzf_vec_t(int) vec_int_t;
  *   typedef dzf_vec_t(double) vec_double_t;
- *   typedef dzf_vec_t(char) vec_str_t;
+ *   typedef dzf_vec_t(char *) vec_str_t;
  * @endcode
  */
 #define dzf_vec_t(T) \
@@ -63,10 +63,10 @@
  * 
  * \b Examples
  * @code{.c}
- *   // Let's build a few types.
+ *   // Let's build three types.
  *   typedef dzf_stack_t(int) stk_int_t;
  *   typedef dzf_stack_t(struct _node) stk_node_t;
- *   typedef dzf_stack_t(char *) stk_node_t;
+ *   typedef dzf_stack_t(char *) stk_str_t;
  * @endcode
  */
 #define dzf_stack_t(T) \
@@ -81,7 +81,7 @@
  * 
  * \b Examples
  * @code{.c}
- *   // Let's build a few types.
+ *   // Let's build three types.
  *   typedef dzf_queue_t(long) q_long_t;
  *   typedef dzf_queue_t(int *) q_iptr_t;
  *   typedef dzf_queue_t(char *) q_str_t;
