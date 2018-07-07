@@ -16,6 +16,21 @@ $ cd doc
 $ make
 
 
+Commit Message
+--------------
+It should be as below, this guide from GNOME.
+
+    prefix   : dzf
+    file-name: util, types, vector, and so on.
+    ---
+    file-name: short message what you did
+
+    Long explanation of what you did, changed. (Optional)
+
+    A link if there is an issue related to this commit. (Optional)
+    ---
+
+
 Contributors
 ------------
 - Yi-Soo An
