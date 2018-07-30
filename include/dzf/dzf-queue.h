@@ -134,7 +134,7 @@
 
 
 /*!
- * Check it is empty or not.
+ * Check whether it is empty or not.
  * 
  * @param _qptr: A pointer to the dzf_queue_t(T).
  * @return TRUE if it is empty, or FALSE.
@@ -144,7 +144,7 @@
 
 
 /*!
- * Check it is full or not.
+ * Check whether it is full or not.
  * 
  * @param _qptr: A pointer to the dzf_queue_t(T).
  * @return TRUE if it is full, or FALSE.
