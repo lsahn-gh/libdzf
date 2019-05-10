@@ -21,99 +21,80 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/*! @file dzf-util.h
- *
- * @brief Helpful stuffs are here.
- */
-
 #ifndef __DZF_UTIL_H__
 #define __DZF_UTIL_H__
 
-#if !defined (__DZF_VEC_H__) && !defined (__DZF_STACK_H__) && \
-    !defined (__DZF_QUEUE_H__) && !defined (__DZF_STRING_H__)
-#error "<dzf-util.h> cannot be included directly!"
-#endif
-
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
 #include <assert.h>
 
 
-/*! libdzf does not use bool type from C99.
- *
- * @enum _dzf_bool
- */
-enum _dzf_bool { 
-    FALSE = 0,  /*!< is as 0 */
-    TRUE = 1    /*!< is as 1 */
-};
-
-
-#ifdef DZF_DEBUG
-# define    _dzf_dbugf(prefix, fmt, ...) \
-                (void)fprintf(stderr, prefix fmt, __VA_ARGS__)
+/* -- Bool type -- */
+#if __STDC_VERSION__ >= 199901L
+/* if it supports c99 */
+# define Bool     bool
+# define TRUE     true
+# define FALSE    false
 #else
-# define    _dzf_dbugf(prefix, fmt, ...) \
-                ((void) 0)
-#endif /* end of DZF_DEBUG */
+# define Bool     int
+# define TRUE     1
+# define FALSE    0
+#endif
 
 
+/* -- Public unit annotation -- */
+#define __DZF_Public_Unit_Annotation__      /* Do nothing! */
+#define __DZF_PUBLIC        __DZF_Public_Unit_Annotation__
 
-#define dzf_log(prefix, fmt, ...) \
-    _dzf_dbugf("** DZF::" prefix " -- ", fmt, __VA_ARGS__)
+/* -- Private unit annotation -- */
+#define __DZF_Private_Unit_Annotation__     /* Do nothing! */
+#define __DZF_PRIVATE       __DZF_Private_Unit_Annotation__
+
+/* -- Deprecate unit annotation -- */
+#define __DZF_Deprecate_Unit_Annotation__   /* Do nothing */
+#define __DZF_DEPRECATE     __DZF_Deprecate_Unit_Annotation__
 
 
-#define dzf_strerr(_msg) \
+/* -- Debug message -- */
+#ifdef DZF_DEBUG
+# define    __dzf_dbugf(prefix, fmt, ...) \
+                (void)fprintf(stderr, prefix " -- " fmt, __VA_ARGS__)
+#else
+# define    __dzf_dbugf(prefix, fmt, ...) ((void) 0)
+#endif
+
+#define __dzf_log_with_domain(domain, prefix, fmt, ...) \
+    __dzf_dbugf("** DZF::" domain "::" prefix, fmt, __VA_ARGS__)
+    
+#define __dzf_strerr(_msg) \
     fprintf(stderr, _msg "\n")
 
+#define __dzf_exit_with_err(_msg, _exitc) \
+    ( __dzf_strerr("** DZF -- " _msg), exit(_exitc) )
+/* -- End of debugging log -- */
 
-#define dzf_exit_with_err(_msg, _exitc) \
-    ( dzf_strerr("** DZF -- " _msg), exit(_exitc) )
+
+/* Block-scope guard */
+#define DZF_GUARD(_CODE) ;_CODE;
 
 
-/*! Re-allocate already allocated memory.
- *
- * If _OLDPTR is NULL, it will be as \c malloc.
- *
- * @param _NPTR: A pointer to be saved allocated memory.
- * @param _OLDPTR: A pointer that already allocated memory.
- * @param _SIZE: Size of requirement.
- * @return None
- */
-#define dzf_realloc(_NPTR, _OLDPTR, _SIZE) \
+#define __dzf_realloc(_NPTR, _OLDPTR, _SIZE) \
     ( (_NPTR = realloc(_OLDPTR, _SIZE)) == NULL ? \
-      dzf_exit_with_err("Failed to allocate memory.", -1) : \
+      __dzf_exit_with_err("Failed to allocate memory.", -1) : \
       ((void) 0) )
 
 
-/*! Attempt to allocate memory.
- *
- * @param _PTR: A pointer to be saved allocated memory.
- * @param _SIZE: Size of requirement.
- * @return None
- */
-#define dzf_malloc(_PTR, _SIZE) \
-    dzf_realloc(_PTR, NULL, _SIZE)
+#define __dzf_malloc(_PTR, _SIZE) \
+    __dzf_realloc(_PTR, NULL, _SIZE)
 
 
-/*! Compare any types.
- *
- * @param _x: Any object.
- * @param _y: Any object.
- * @return TRUE if both are same, or FALSE.
- */
-#define dzf_cmp(_x, _y) \
+#define __dzf_cmp(_x, _y) \
     ( (_x == _y) ? TRUE : FALSE )
 
 
-/*! Get a size of T type.
- *
- * @param _ptr: Any pointer to an object that has T *data member.
- * @return int
- */
-#define dzf_sizeof(_ptr) \
+#define __dzf_sizeof(_ptr) \
     sizeof((_ptr)->data[0])
 
 
