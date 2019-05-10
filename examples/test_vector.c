@@ -42,8 +42,7 @@ vector_main(void)
 }
 
 
-// Test for string type.
-static void vector_string_print(char **str, ...);
+static void vector_string_print(char* *str, ...);
 
 static void
 vector_string_type(void)
@@ -51,38 +50,34 @@ vector_string_type(void)
     typedef dzf_vec_t(char *) vec_str_t;
     vec_str_t str;
 
+    dzf_vec_new(&str, sizeof(char*));
+    assert(dzf_vec_get_capacity(&str) == 8);
+    dzf_vec_add_back(&str, "Hello World");
 
-    dzf_vec_new(&str);
-    dzf_vec_add(&str, "Hello World");
+    assert(dzf_vec_get_length(&str) == 1);
 
-    assert(dzf_vec_size(&str) == 1);
-    assert(dzf_vec_cap(&str) == 8);
-
+    dzf_vec_add_back(&str, "Hello World 2");
+    dzf_vec_add_back(&str, "Hello World 3");
+    dzf_vec_add_back(&str, "Hello World 4");
+    dzf_vec_add_back(&str, "Hello World 5");
+    dzf_vec_add_back(&str, "Hello World 6");
+    assert(strcmp(dzf_vec_get_value(&str, 0), "Hello World") == 0);
     dzf_vec_foreach(&str, vector_string_print, NULL);
 
-    dzf_vec_add(&str, "Hello World 2");
-    dzf_vec_add(&str, "Hello World 3");
-    dzf_vec_add(&str, "Hello World 4");
-    dzf_vec_add(&str, "Hello World 5");
-    dzf_vec_add(&str, "Hello World 6");
-    assert(strcmp(dzf_vec_get_val_at(&str, 0), "Hello World") == 0);
+    dzf_vec_set_value(&str, dzf_vec_get_length(&str)-1, "This is not hell world");
+    printf("print element at %d: %s\n", 5, dzf_vec_get_value(&str, 5));
+
+    dzf_vec_remove(&str, 0);
+    assert(dzf_vec_get_length(&str) == 5);
 
     dzf_vec_foreach(&str, vector_string_print, NULL);
-    dzf_vec_set(&str, dzf_vec_size(&str)-1, "This is not hell world");
-
-    printf("print element at %d: %s\n", 5, dzf_vec_get_val_at(&str, 5));
-
-    dzf_vec_rmv(&str, 0);
-    dzf_vec_foreach(&str, vector_string_print, NULL);
-    assert(dzf_vec_size(&str) == 5);
-
-    printf("print element at %d: %s\n", 5, dzf_vec_get_val_at(&str, 4));
+    printf("print element at %d: %s\n", 4, dzf_vec_get_value(&str, 4));
     
     dzf_vec_free(&str);
 }
 
 static void
-vector_string_print(char **str, ...)
+vector_string_print(char* *str, ...)
 {
     printf("%s\n", *str);
 }
@@ -98,25 +93,24 @@ vector_double_type(void)
     typedef dzf_vec_t(double) vec_double_t;
     vec_double_t dvec;
 
-    dzf_vec_new(&dvec);
-    assert(dzf_vec_size(&dvec) == 0);
-    assert(dzf_vec_cap(&dvec) == 8);
+    dzf_vec_new(&dvec, sizeof(double));
+    assert(dzf_vec_get_length(&dvec) == 0);
+    assert(dzf_vec_get_capacity(&dvec) == 8);
 
-    dzf_vec_add(&dvec, 9.8);
-    dzf_vec_add(&dvec, 3.14);
-    dzf_vec_add(&dvec, 1.0);
+    dzf_vec_add_back(&dvec, 9.8);
+    dzf_vec_add_back(&dvec, 3.14);
+    dzf_vec_add_back(&dvec, 1.0);
     
     dzf_vec_foreach(&dvec, vector_double_print, NULL);
     putchar('\n');
 
-    assert(dzf_vec_size(&dvec) == 3);
+    assert(dzf_vec_get_length(&dvec) == 3);
 
     dzf_vec_foreach(&dvec, vector_double_plus, NULL);
-    assert(dzf_vec_get_val_at(&dvec, 0) == 10.8);
+    assert(dzf_vec_get_value(&dvec, 0) == 10.8);
 
     dzf_vec_foreach(&dvec, vector_double_print, NULL);
     putchar('\n');
-
 
     dzf_vec_free(&dvec);
 }
@@ -130,7 +124,7 @@ vector_double_plus(double *item, ...)
 static void
 vector_double_print(double *item, ...)
 {
-    printf("%lf ", *item);
+    printf("%.2lf ", *item);
 }
 
 
@@ -148,21 +142,21 @@ vector_user_struct_type(void)
     typedef dzf_vec_t(user_t) vec_user_t;
     vec_user_t users;
 
-    dzf_vec_new_with(&users, 32);
-    assert(dzf_vec_cap(&users) == 32);
+    dzf_vec_new_with(&users, sizeof(vec_user_t), 32);
+    assert(dzf_vec_get_capacity(&users) == 32);
 
     user_t jeremy = {
         "Jeremy", 28
     };
 
-    dzf_vec_add(&users, jeremy);
+    dzf_vec_add_back(&users, jeremy);
 
     dzf_vec_foreach(&users, vector_user_struct_print, NULL);
 
-    user_t *temp = dzf_vec_get_ptr_at(&users, 0);
+    user_t *temp = dzf_vec_get_pointer(&users, 0);
     temp->age = 10;
 
-    user_t temp2 = dzf_vec_get_val_at(&users, 0);
+    user_t temp2 = dzf_vec_get_value(&users, 0);
     printf("Name : %s, Age : %d\n", temp2.name, temp2.age);
 
 
