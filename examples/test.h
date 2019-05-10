@@ -29,8 +29,10 @@
 
 #define border(header) printf("\n--------------" header "---------------\n")
 
-void stack_main(void);
 void vector_main(void);
+#if 0
+void stack_main(void);
 void queue_main(void);
+#endif
 
 #endif
