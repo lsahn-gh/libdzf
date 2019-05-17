@@ -24,6 +24,9 @@
 #include "test.h"
 #include "dzf/dzf.h"
 
+#include <float.h>
+#include <math.h>
+
 static void vector_string_type(void);
 static void vector_double_type(void);
 static void vector_user_struct_type(void);
@@ -107,7 +110,7 @@ vector_double_type(void)
     assert(dzf_vec_get_length(&dvec) == 3);
 
     dzf_vec_foreach(&dvec, vector_double_plus, NULL);
-    assert(dzf_vec_get_value(&dvec, 0) == 10.8);
+    assert(fabs(dzf_vec_get_value(&dvec, 0) - 10.8) < DBL_EPSILON);
 
     dzf_vec_foreach(&dvec, vector_double_print, NULL);
     putchar('\n');
