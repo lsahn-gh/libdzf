@@ -130,4 +130,9 @@ dzf_malloc(size_t size)
     sizeof((_ptr)->data[0])
 
 
+/* should it be here? */
+#define __right_x(n)  +n
+#define __left_x(n)   -n
+
+
 #endif

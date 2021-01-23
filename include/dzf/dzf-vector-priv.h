@@ -237,7 +237,7 @@ DZF_PRIVATE
 
 
 DZF_PRIVATE
-#define __dzf_vec_self_memmove(_vecptr, _direction, _idx) \
+#define __dzf_vec_self_memmove(_vecptr, _idx, _direction) \
    memmove(__dzf_vec_get_pointer_at(_vecptr, _idx _direction), \
            __dzf_vec_get_pointer_at(_vecptr, _idx), \
            __dzf_vec_get_length(_vecptr) - _idx)
@@ -248,7 +248,8 @@ DZF_PRIVATE
     ( \
         __dzf_vec_expand(DZF_VEC_VOID(_vecptr)), \
         ((_idx == __dzf_vec_get_length(DZF_VEC_VOID(_vecptr))) \
-            ? NULL : __dzf_vec_self_memmove(DZF_VEC_VOID(_vecptr), +1, _idx)), \
+            ? NULL : __dzf_vec_self_memmove(DZF_VEC_VOID(_vecptr), \
+                                            _idx, __right_x(1))), \
         __dzf_vec_set_value_at(_vecptr, _idx, _val), \
         __dzf_vec_set_length(DZF_VEC_VOID(_vecptr), \
                              __dzf_vec_get_length(DZF_VEC_VOID(_vecptr))+1) \
@@ -259,7 +260,7 @@ DZF_PRIVATE
 #define __dzf_vec_remove_at(_vecptr, _idx) \
     ( \
         (_idx == __dzf_vec_get_length(_vecptr)) \
-            ? NULL : __dzf_vec_self_memmove(_vecptr, -1, _idx+1), \
+            ? NULL : __dzf_vec_self_memmove(_vecptr, _idx+1, __left_x(1)), \
         __dzf_vec_set_length(_vecptr, __dzf_vec_get_length(_vecptr)-1) \
     )
 
