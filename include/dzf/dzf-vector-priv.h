@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018-2019 Yi-Soo An <yisooan@gmail.com>
+ * Copyright (c) 2018-2021 Leesoo Ahn <lsahn@ooseel.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,8 +21,8 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __DZF_VEC_PRIVATE_H__
-#define __DZF_VEC_PRIVATE_H__
+#ifndef __DZF_VEC_PRIV_H__
+#define __DZF_VEC_PRIV_H__
 
 #if !defined (__LIBDZF_H_INCLUDE__)
 #   error "Only <dzf.h> can be included directly!"
@@ -31,18 +31,43 @@
 #include "dzf-util.h"
 #include "dzf-object.h"
 
-#include "dzf-vector-type.h"
+/* -- Type Definition -- */
+/*!
+ * @def dzf_vec_t(T)
+ * @brief Vector type.
+ *
+ * @param T: A type to represent the elements.
+ *
+ * \b Examples
+ * @code{.c}
+ *   // Build three types.
+ *   typedef dzf_vec_t(int) vec_int_t;
+ *   typedef dzf_vec_t(double) vec_double_t;
+ *   typedef dzf_vec_t(char *) vec_str_t;
+ * @endcode
+ */
+#define dzf_vec_t(T) \
+    struct { \
+        dzf_object_t _obj; \
+        int _length; \
+        size_t _allocated_size; \
+        size_t _element_size; \
+        T *data; \
+    }
 
+typedef dzf_vec_t(char)         __dzf_vec_priv_void_t;
+#define DZF_VEC_VOID(_vecptr)   ((__dzf_vec_priv_void_t*)_vecptr)
+
+
+/* -- Define something else -- */
 #define DZF_VECTOR_MAGIC   (OBJ_MAGIC | 0x1)
-
 #define DZF_VEC_DFLT_CAP        8   /* default capacity */
-
 #define DZF_VECTOR_DOMAIN      "VECTOR"
 #define __dzf_vec_log(prefix, fmt, ...) \
     __dzf_log_with_domain(DZF_VECTOR_DOMAIN, prefix, fmt, __VA_ARGS__)
 
 
-/* --- Static parts --- */
+/* -- Private APIs -- */
 __DZF_PRIVATE
 static inline int
 __dzf_vec_set_length(__dzf_vec_priv_void_t *vec,

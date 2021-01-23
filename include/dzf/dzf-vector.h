@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Yi-Soo An <yisooan@gmail.com>
+ * Copyright (c) 2018-2021 Leesoo Ahn <lsahn@ooseel.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -28,7 +28,7 @@
 #   error "Only <dzf.h> can be included directly!"
 #endif
 
-#include "dzf-vector-private.h"
+#include "dzf-vector-priv.h"
 
 
 __DZF_PUBLIC
