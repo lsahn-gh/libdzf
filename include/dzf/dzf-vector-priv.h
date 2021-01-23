@@ -29,7 +29,6 @@
 #endif
 
 #include "dzf-util.h"
-#include "dzf-object.h"
 
 /* -- Type Definition -- */
 /*!
@@ -48,7 +47,6 @@
  */
 #define dzf_vec_t(T) \
     struct { \
-        dzf_object_t _obj; \
         int _length; \
         size_t _allocated_size; \
         size_t _element_size; \
@@ -139,14 +137,6 @@ __dzf_vec_index_validator(__dzf_vec_priv_void_t *vec,
 
 
 __DZF_PRIVATE
-static inline Bool
-__dzf_vec_magic_validator(__dzf_vec_priv_void_t *vec)
-{
-    return vec != NULL && DZF_OBJECT(vec)->magic == DZF_VECTOR_MAGIC;
-}
-
-
-__DZF_PRIVATE
 static inline int
 __dzf_vec_get_capacity(__dzf_vec_priv_void_t *vec)
 {
@@ -199,7 +189,6 @@ __dzf_vec_init(__dzf_vec_priv_void_t *vec,
     size_t required_size = elem_size * capacity;
     __dzf_malloc(vec->data, required_size);
     __dzf_vec_log("MALLOC ", "Vector can have %zd items now\n", capacity); 
-    __dzf_obj_set_magic(DZF_OBJECT(vec), DZF_VECTOR_MAGIC);
     vec->_length = 0;
     vec->_element_size = elem_size;
     vec->_allocated_size = capacity;
@@ -249,7 +238,6 @@ __DZF_PRIVATE
 __DZF_PRIVATE
 #define __dzf_vec_insert_at(_vecptr, _idx, _val) \
     { \
-        assert(__dzf_vec_magic_validator(DZF_VEC_VOID(_vecptr))); \
         assert(_idx <= __dzf_vec_get_allocated_size(DZF_VEC_VOID(_vecptr))); \
         __dzf_vec_expand(DZF_VEC_VOID(_vecptr)); \
         int n = __dzf_vec_get_length(DZF_VEC_VOID(_vecptr)); \
@@ -264,7 +252,6 @@ __DZF_PRIVATE
 __DZF_PRIVATE
 #define __dzf_vec_remove_at(_vecptr, _idx) \
     { \
-        assert(__dzf_vec_magic_validator(DZF_VEC_VOID(_vecptr))); \
         assert(__dzf_vec_index_validator(DZF_VEC_VOID(_vecptr), _idx)); \
         int n = __dzf_vec_get_length(DZF_VEC_VOID(_vecptr)); \
         for (int i = _idx; i < n-1; i++) { /* shifting */ \
