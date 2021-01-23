@@ -56,6 +56,12 @@
 #define __DZF_Deprecate_Unit_Annotation__   /* Do nothing */
 #define __DZF_DEPRECATE     __DZF_Deprecate_Unit_Annotation__
 
+/* -- New ones -- */
+#define DZF_PUBLIC        __DZF_Public_Unit_Annotation__
+#define DZF_PRIVATE       __DZF_Private_Unit_Annotation__
+#define DZF_DEPRECATE     __DZF_Deprecate_Unit_Annotation__
+#define DZF_DEPRECATED    DZF_DEPRECATE
+
 
 /* -- Debug message -- */
 #ifdef DZF_DEBUG
@@ -80,20 +86,46 @@
 #define DZF_GUARD(_CODE) ;_CODE;
 
 
+DZF_DEPRECATE
 #define __dzf_realloc(_NPTR, _OLDPTR, _SIZE) \
     ( (_NPTR = realloc(_OLDPTR, _SIZE)) == NULL ? \
       __dzf_exit_with_err("Failed to allocate memory.", -1) : \
       ((void) 0) )
 
 
+DZF_DEPRECATE
 #define __dzf_malloc(_PTR, _SIZE) \
     __dzf_realloc(_PTR, NULL, _SIZE)
 
 
+static inline void *
+dzf_realloc(void *oldptr, size_t size)
+{
+  void *newm = NULL;
+
+  if (size < 1)
+    return newm;
+
+  if (!(newm = realloc(oldptr, size), newm))
+    __dzf_exit_with_err("Failed to allocate memory", -1);
+
+  return newm;
+}
+
+
+static inline void *
+dzf_malloc(size_t size)
+{
+  return dzf_realloc(NULL, size);
+}
+
+
+#define dzf_cmp(x, y) __dzf_cmp(x, y)
 #define __dzf_cmp(_x, _y) \
-    ( (_x == _y) ? TRUE : FALSE )
+    ( ((_x) == (_y)) ? TRUE : FALSE )
 
 
+#define dzf_sizeof(ptr) __dzf_sizeof(ptr)
 #define __dzf_sizeof(_ptr) \
     sizeof((_ptr)->data[0])
 
