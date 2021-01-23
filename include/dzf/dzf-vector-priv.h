@@ -144,7 +144,6 @@ __dzf_vec_magic_validator(__dzf_vec_priv_void_t *vec)
 {
     return vec != NULL && DZF_OBJECT(vec)->magic == DZF_VECTOR_MAGIC;
 }
-/* --- End of Static parts --- */
 
 
 __DZF_PRIVATE
