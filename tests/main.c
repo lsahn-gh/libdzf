@@ -36,10 +36,7 @@ main(int argc, char **argv)
 {
     vector_main();
     stack_main();
-
-#if 0
     queue_main();
-#endif
 
     return 0;
 }

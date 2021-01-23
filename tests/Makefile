@@ -1,7 +1,7 @@
 CC=cc
 CFLAGS=-Wall -Wpedantic -std=c99 -g -I./ -I../include -DDZF_DEBUG
 
-LIBS=test_vector.c test_stack.c
+LIBS=test_vector.c test_stack.c test_queue.c
 
 all: main
 

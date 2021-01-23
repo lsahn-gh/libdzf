@@ -31,8 +31,6 @@
 
 void vector_main(void);
 void stack_main(void);
-#if 0
 void queue_main(void);
-#endif
 
 #endif

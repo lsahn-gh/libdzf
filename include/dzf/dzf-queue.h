@@ -1,7 +1,7 @@
 /*
  * MIT License
  *
- * Copyright (c) 2018 Yi-Soo An <yisooan@gmail.com>
+ * Copyright (c) 2018-2021 Leesoo Ahn <lsahn@ooseel.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -37,32 +37,9 @@
 #error "Only <dzf.h> can be included directly!"
 #endif
 
+#include "dzf-queue-priv.h"
 
-#include "dzf-util.h"
-
-#define _dzf_q_log(prefix, fmt, ...) \
-    _dzf_dbugf("** DZF::QUEUE::" prefix " -- ", fmt, __VA_ARGS__)
-
-#define DFLT_Q_CAP      8   /* default capacity */
-
-
-
-/*
- * Attempt to allocate memory as much as size of T multiplies by capacity.
- * 
- * @param _qptr: A pointer to the dzf_queue_t(T).
- * @param _qcap: Capacity.
- * @return None
- */
-#define _dzf_queue_priv_init(_qptr, _qcap) \
-    do { \
-        dzf_malloc((_qptr)->data, dzf_sizeof(_qptr) * _qcap); \
-        _dzf_q_log("MALLOC", "Required size: %zd bytes.\n", \
-                   dzf_sizeof(_qptr) * _qcap); \
-        dzf_queue_front(_qptr) = -1; \
-        dzf_queue_rear(_qptr) = -1; \
-        dzf_queue_cap(_qptr) = _qcap; \
-    } while(FALSE)
+#define DFLT_CAP 16
 
 
 /*!
@@ -85,7 +62,7 @@
  * Try it with Vector.
  * 
 #define dzf_queue_new(_qptr) \
-    _dzf_queue_priv_init(_qptr, DFLT_Q_CAP)
+    _dzf_queue_priv_init(_qptr, DFLT_CAP)
  */
 
 
