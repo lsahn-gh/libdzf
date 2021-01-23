@@ -58,7 +58,6 @@ typedef dzf_vec_t(char)         __dzf_vec_priv_void_t;
 
 
 /* -- Define something else -- */
-#define DZF_VECTOR_MAGIC   (OBJ_MAGIC | 0x1)
 #define DZF_VEC_DFLT_CAP        8   /* default capacity */
 #define DZF_VECTOR_DOMAIN      "VECTOR"
 #define __dzf_vec_log(prefix, fmt, ...) \
