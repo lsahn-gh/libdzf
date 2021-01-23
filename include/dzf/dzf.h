@@ -30,12 +30,9 @@
 #define __LIBDZF_H__
 
 #define __LIBDZF_H_INCLUDE__
-
-#include "dzf-types.h"
-#include "dzf-vector.h"
-#include "dzf-stack.h"
-#include "dzf-queue.h"
-
+# include "dzf-vector.h"
+# include "dzf-stack.h"
+# include "dzf-queue.h"
 #undef __LIBDZF_H_INCLUDE__
 
 #endif
