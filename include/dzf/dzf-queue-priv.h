@@ -64,7 +64,7 @@ typedef dzf_queue_t(void)       __dzf_queue_priv_void_t;
  * @param _qcap: Capacity.
  * @return None
  */
-__DZF_PRIVATE
+DZF_PRIVATE
 #define _dzf_queue_priv_init(_qptr, _qcap) \
     do { \
         __dzf_malloc((_qptr)->data, __dzf_sizeof(_qptr) * _qcap); \

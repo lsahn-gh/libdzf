@@ -71,7 +71,7 @@ typedef dzf_stack_t(char) __dzf_stack_priv_void_t;
  * @param _stk_cap: Capacity.
  * @return None
  */
-__DZF_PRIVATE
+DZF_PRIVATE
 #define _dzf_stack_priv_init(_stkptr, _stk_cap) \
     do { \
         __dzf_malloc((_stkptr)->data, __dzf_sizeof(_stkptr) * _stk_cap); \
@@ -89,7 +89,7 @@ __DZF_PRIVATE
  * @param _stkptr: A pointer to the dzf_stack_t(T).
  * @return None
  */
-__DZF_PRIVATE
+DZF_PRIVATE
 # define    _dzf_stack_priv_extend(_stkptr) \
     ( (dzf_stack_is_full(_stkptr) == TRUE) ? \
       ( __dzf_realloc( \
@@ -106,7 +106,7 @@ __DZF_PRIVATE
  * If \b DZF_DYNAMIC_STACK is off, _dzf_stack_priv_extend will be as
  * static stack and check the stack is full, or not.
  */
-__DZF_PRIVATE
+DZF_PRIVATE
 # define    _dzf_stack_priv_extend(_stkptr) \
     assert(dzf_stack_is_full(_stkptr) == FALSE)
 
@@ -119,7 +119,7 @@ __DZF_PRIVATE
  * @param _stkptr: A pointer to the dzf_stack_t(T).
  * @retur \c int
  */
-__DZF_PRIVATE
+DZF_PRIVATE
 #define _dzf_stack_top(_stkptr) \
     ((_stkptr)->top)
 

@@ -59,7 +59,7 @@
  * @param _cap_sze: Capacity.
  * @return None
  */
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_stack_new_with(_stkptr, _cap_sze) \
     _dzf_stack_priv_init(_stkptr, _cap_sze)
 
@@ -72,7 +72,7 @@ __DZF_PUBLIC
  * @param _stkptr: A pointer to the dzf_stack_t(T).
  * @return None
  */
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_stack_new(_stkptr) \
     dzf_stack_new_with(_stkptr, DFLT_STACK_CAP)
 
@@ -83,7 +83,7 @@ __DZF_PUBLIC
  * @param _stkptr: A pointer to the dzf_stack_t(T).
  * @return None
  */
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_stack_free(_stkptr) \
     for ( free((_stkptr)->data), \
           (_stkptr)->data = NULL; \
@@ -96,7 +96,7 @@ __DZF_PUBLIC
  * @param _stkptr: A pointer to the dzf_stack_t(T).
  * @return \c int
  */
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_stack_size(_stkptr) \
     _dzf_stack_top(_stkptr)+1
 
@@ -107,7 +107,7 @@ __DZF_PUBLIC
  * @param _stkptr: A pointer to the dzf_stack_t(T).
  * @return \c int
  */
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_stack_cap(_stkptr) \
     ((_stkptr)->capacity)
 
@@ -118,7 +118,7 @@ __DZF_PUBLIC
  * @param _stkptr: A pointer to the dzf_stack_t(T).
  * @return TRUE if it is empty, or FALSE.
  */
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_stack_is_empty(_stkptr) \
     ( _dzf_stack_top(_stkptr) == -1 ? TRUE : FALSE )
 
@@ -129,7 +129,7 @@ __DZF_PUBLIC
  * @param _stkptr: A pointer to the dzf_stack_t(T).
  * @return TRUE if it is full, or FALSE.
  */
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_stack_is_full(_stkptr) \
     ( dzf_stack_size(_stkptr) == dzf_stack_cap(_stkptr) ? TRUE : FALSE )
 
@@ -141,7 +141,7 @@ __DZF_PUBLIC
  * @param value: \c T typed value.
  * @return None
  */
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_stack_push(_stkptr, value) \
     for ( _dzf_stack_priv_extend(_stkptr), \
           ++_dzf_stack_top(_stkptr), \
@@ -155,7 +155,7 @@ __DZF_PUBLIC
  * @param _stkptr: A pointer to the dzf_stack_t(T).
  * @return \c T typed value.
  */
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_stack_pop(_stkptr) \
     ( assert(dzf_stack_is_empty(_stkptr) == FALSE), \
       --_dzf_stack_top(_stkptr), \
@@ -170,7 +170,7 @@ __DZF_PUBLIC
  * @param _stkptr: A pointer to the dzf_stack_t(T).
  * @return \c T typed value.
  */
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_stack_at_top(_stkptr) \
     ( assert(dzf_stack_is_empty(_stkptr) == FALSE), \
       (_stkptr)->data[_dzf_stack_top(_stkptr)] )
@@ -184,7 +184,7 @@ __DZF_PUBLIC
  * @param ...: Various arguments to be passed into the function.
  * @return None
  */
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_stack_foreach(_stkptr, _fptr, ...) \
     for ( int i = 0; \
           i < dzf_stack_size(_stkptr); \

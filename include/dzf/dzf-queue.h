@@ -49,6 +49,7 @@
  * @param _cap_sze: Capacity.
  * @return None
  */
+DZF_PUBLIC
 #define dzf_queue_new_with(_qptr, _cap_sze) \
     _dzf_queue_priv_init(_qptr, _cap_sze)
 
@@ -72,6 +73,7 @@
  * @param _qptr: A pointer to the dzf_queue_t(T).
  * @return None
  */
+DZF_PUBLIC
 #define dzf_queue_free(_qptr) \
     for ( free((_qptr)->data), \
           (_qptr)->data = NULL; \
@@ -84,6 +86,7 @@
  * @param _qptr: A pointer to the dzf_queue_t(T).
  * @return \c int
  */
+DZF_PUBLIC
 #define dzf_queue_cap(_qptr) \
     ((_qptr)->_cap)
 
@@ -95,6 +98,7 @@
  * @param _qptr: A pointer to the dzf_queue_t(T).
  * @return \c int
  */
+DZF_PUBLIC
 #define dzf_queue_front(_qptr) \
     ((_qptr)->front)
 
@@ -106,6 +110,7 @@
  * @param _qptr: A pointer to the dzf_queue_t(T).
  * @return \c int
  */
+DZF_PUBLIC
 #define dzf_queue_rear(_qptr) \
     ((_qptr)->rear)
 
@@ -116,6 +121,7 @@
  * @param _qptr: A pointer to the dzf_queue_t(T).
  * @return TRUE if it is empty, or FALSE.
  */
+DZF_PUBLIC
 #define dzf_queue_is_empty(_qptr) \
     ( dzf_queue_front(_qptr) == -1 ? TRUE : FALSE )
 
@@ -126,6 +132,7 @@
  * @param _qptr: A pointer to the dzf_queue_t(T).
  * @return TRUE if it is full, or FALSE.
  */
+DZF_PUBLIC
 #define dzf_queue_is_full(_qptr) \
     ( ((dzf_queue_rear(_qptr)+1) % dzf_queue_cap(_qptr)) == dzf_queue_front(_qptr) \
                                  ? TRUE : FALSE )
@@ -138,6 +145,7 @@
  * @param value: \c T typed value.
  * @return None
  */
+DZF_PUBLIC
 #define dzf_queue_enq(_qptr, value) \
     for ( assert(dzf_queue_is_full(_qptr) == FALSE), \
           dzf_queue_rear(_qptr) = (dzf_queue_rear(_qptr)+1) % dzf_queue_cap(_qptr), \
@@ -153,6 +161,7 @@
  * @param _var: A variable to hold the data.
  * @return None
  */
+DZF_PUBLIC
 #define dzf_queue_deq(_qptr, _var) \
     for ( assert(dzf_queue_is_empty(_qptr) == FALSE), \
           _var = (_qptr)->data[dzf_queue_front(_qptr)], \
@@ -171,6 +180,7 @@
  * @param ...: Various arguments to be passed into the function.
  * @return None
  */
+DZF_PUBLIC
 #define dzf_queue_foreach(_qptr, _fptr, ...) \
     for ( int i = dzf_queue_front(_qptr); \
           i == dzf_queue_rear(_qptr)+1 \

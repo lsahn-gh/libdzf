@@ -31,104 +31,105 @@
 #include "dzf-vector-priv.h"
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_new_with(_vecptr, _elem_size, _cap_sze) \
     __dzf_vec_init(DZF_VEC_VOID(_vecptr), _elem_size, _cap_sze)
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_new(_vecptr, _elem_size) \
     dzf_vec_new_with(_vecptr, _elem_size, DZF_VEC_DFLT_CAP)
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_free(_vecptr) \
     ( __dzf_vec_free(DZF_VEC_VOID(_vecptr)) )
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_get_length(_vecptr) \
     ( __dzf_vec_get_length(DZF_VEC_VOID(_vecptr)) )
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_get_capacity(_vecptr) \
     ( __dzf_vec_get_capacity(DZF_VEC_VOID(_vecptr)) )
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_is_full(_vecptr) \
     ( __dzf_vec_is_full(DZF_VEC_VOID(_vecptr)) )
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_is_empty(_vecptr) \
     ( __dzf_vec_is_empty(DZF_VEC_VOID(_vecptr)) )
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_get_pointer(_vecptr, _idx) \
     dzf_vec_get_pointer_at(_vecptr, _idx)
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_get_pointer_at(_vecptr, _idx) \
     ( assert(__dzf_vec_index_validator(DZF_VEC_VOID(_vecptr), _idx)), \
       __dzf_vec_get_pointer_at(DZF_VEC_VOID(_vecptr), _idx) )
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_set_value(_vecptr, _idx, _val) \
     dzf_vec_set_value_at(_vecptr, _idx, _val)
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_set_value_at(_vecptr, _idx, _val) \
     ( assert(__dzf_vec_index_validator(DZF_VEC_VOID(_vecptr), _idx)), \
       __dzf_vec_set_value_at(_vecptr, _idx, _val) )
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_get_value(_vecptr, _idx) \
     dzf_vec_get_value_at(_vecptr, _idx)
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_get_value_at(_vecptr, _idx) \
     ( assert(__dzf_vec_index_validator(DZF_VEC_VOID(_vecptr), _idx)), \
       __dzf_vec_get_value_at(_vecptr, _idx) )
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_add(_vecptr, _idx, _val) \
     dzf_vec_add_at(_vecptr, _idx, _val)
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_add_at(_vecptr, _idx, _val) \
     DZF_GUARD(__dzf_vec_insert_at(_vecptr, _idx, _val))
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_add_back(_vecptr, _val) \
     dzf_vec_add_at(_vecptr, __dzf_vec_get_length(DZF_VEC_VOID(_vecptr)), _val)
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_remove(_vecptr, _idx) \
     dzf_vec_remove_at(_vecptr, _idx)
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_remove_at(_vecptr, _idx) \
     DZF_GUARD(__dzf_vec_remove_at(_vecptr, _idx))
 
 
-__DZF_PUBLIC
+DZF_PUBLIC
 #define dzf_vec_remove_back(_vecptr) \
     dzf_vec_remove_at(_vecptr, __dzf_vec_get_length(_vecptr)-1)
 
 
+DZF_PUBLIC
 #define dzf_vec_foreach(_vecptr, _fptr, ...) \
     for ( int i = 0; \
           i < dzf_vec_get_length(_vecptr); \
