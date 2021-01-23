@@ -43,7 +43,6 @@
 
 
 /* --- Static parts --- */
-/* With static keyword, never used as a public methods */
 __DZF_PRIVATE
 static inline int
 __dzf_vec_set_length(__dzf_vec_priv_void_t *vec,
@@ -58,7 +57,7 @@ __dzf_vec_set_length(__dzf_vec_priv_void_t *vec,
 
 
 __DZF_PRIVATE
-int
+static inline int
 __dzf_vec_get_length(__dzf_vec_priv_void_t *vec)
 {
     return vec->_length;
@@ -124,7 +123,7 @@ __dzf_vec_magic_validator(__dzf_vec_priv_void_t *vec)
 
 
 __DZF_PRIVATE
-int
+static inline int
 __dzf_vec_get_capacity(__dzf_vec_priv_void_t *vec)
 {
     return __dzf_vec_get_allocated_size(vec) - __dzf_vec_get_length(vec);
@@ -132,7 +131,7 @@ __dzf_vec_get_capacity(__dzf_vec_priv_void_t *vec)
 
 
 __DZF_PRIVATE
-Bool
+static inline Bool
 __dzf_vec_is_full(__dzf_vec_priv_void_t *vec)
 {
     return (__dzf_vec_get_allocated_size(vec) == __dzf_vec_get_length(vec));
@@ -140,7 +139,7 @@ __dzf_vec_is_full(__dzf_vec_priv_void_t *vec)
 
 
 __DZF_PRIVATE
-Bool
+static inline Bool
 __dzf_vec_is_empty(__dzf_vec_priv_void_t *vec)
 {
     return (__dzf_vec_get_length(vec) == 0);
@@ -148,7 +147,7 @@ __dzf_vec_is_empty(__dzf_vec_priv_void_t *vec)
 
 
 __DZF_PRIVATE
-int
+static inline int
 __dzf_vec_expand(__dzf_vec_priv_void_t *vec)
 {
     size_t old_allocated_size = __dzf_vec_get_allocated_size(vec);
@@ -165,7 +164,7 @@ __dzf_vec_expand(__dzf_vec_priv_void_t *vec)
 
 
 __DZF_PRIVATE
-int
+static inline int
 __dzf_vec_init(__dzf_vec_priv_void_t *vec,
                size_t elem_size,
                size_t capacity)
@@ -186,7 +185,7 @@ __dzf_vec_init(__dzf_vec_priv_void_t *vec,
 
 
 __DZF_PRIVATE
-int
+static inline int
 __dzf_vec_free(__dzf_vec_priv_void_t *vec)
 { 
     if (vec->data == NULL)
@@ -203,7 +202,7 @@ __dzf_vec_free(__dzf_vec_priv_void_t *vec)
 
 
 __DZF_PRIVATE
-void *
+static inline void *
 __dzf_vec_get_pointer_at(__dzf_vec_priv_void_t *vec,
                          size_t index)
 {
