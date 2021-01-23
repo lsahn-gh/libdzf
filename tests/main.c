@@ -35,10 +35,9 @@ int
 main(int argc, char **argv)
 {
     vector_main();
-
-#if 0
     stack_main();
 
+#if 0
     queue_main();
 #endif
 
