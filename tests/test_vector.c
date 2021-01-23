@@ -55,34 +55,26 @@ vector_string_type(void)
 
     dzf_vec_new(&str, sizeof(char*));
     assert(dzf_vec_get_capacity(&str) == 8);
-    dzf_vec_add_back(&str, "Hello World");
 
+    dzf_vec_add_tail(&str, "Hello World");
     assert(dzf_vec_get_length(&str) == 1);
 
-    dzf_vec_add_back(&str, "Hello World 2");
-    dzf_vec_add_back(&str, "Hello World 3");
-    dzf_vec_add_back(&str, "Hello World 4");
-    dzf_vec_add_back(&str, "Hello World 5");
-    dzf_vec_add_back(&str, "Hello World 6");
-    assert(strcmp(dzf_vec_get_value(&str, 0), "Hello World") == 0);
-    dzf_vec_foreach(&str, vector_string_print, NULL);
+    dzf_vec_add_tail(&str, "Hello World 2");
+    dzf_vec_add_tail(&str, "Hello World 3");
+    dzf_vec_add_tail(&str, "Hello World 4");
+    dzf_vec_add_tail(&str, "Hello World 5");
+    dzf_vec_add_tail(&str, "Hello World 6");
+    assert(strcmp(dzf_vec_get_value_at(&str, 0), "Hello World") == 0);
+    assert(strcmp(dzf_vec_get_value_at(&str, dzf_vec_get_length(&str)-1), "Hello World 6") == 0);
 
     dzf_vec_set_value(&str, dzf_vec_get_length(&str)-1, "This is not hell world");
-    printf("print element at %d: %s\n", 5, dzf_vec_get_value(&str, 5));
+    assert(strcmp(dzf_vec_get_value_at(&str, dzf_vec_get_length(&str)-1), "This is not hell world") == 0);
 
-    dzf_vec_remove(&str, 0);
+    dzf_vec_rmv_head(&str);
     assert(dzf_vec_get_length(&str) == 5);
-
-    dzf_vec_foreach(&str, vector_string_print, NULL);
-    printf("print element at %d: %s\n", 4, dzf_vec_get_value(&str, 4));
+    assert(strcmp(dzf_vec_get_value_at(&str, 0), "Hello World 2") == 0);
     
     dzf_vec_free(&str);
-}
-
-static void
-vector_string_print(char* *str, ...)
-{
-    printf("%s\n", *str);
 }
 
 
@@ -100,9 +92,9 @@ vector_double_type(void)
     assert(dzf_vec_get_length(&dvec) == 0);
     assert(dzf_vec_get_capacity(&dvec) == 8);
 
-    dzf_vec_add_back(&dvec, 9.8);
-    dzf_vec_add_back(&dvec, 3.14);
-    dzf_vec_add_back(&dvec, 1.0);
+    dzf_vec_add_tail(&dvec, 9.8);
+    dzf_vec_add_tail(&dvec, 3.14);
+    dzf_vec_add_tail(&dvec, 1.0);
     
     dzf_vec_foreach(&dvec, vector_double_print, NULL);
     putchar('\n');
@@ -152,7 +144,7 @@ vector_user_struct_type(void)
         "Jeremy", 28
     };
 
-    dzf_vec_add_back(&users, jeremy);
+    dzf_vec_add_tail(&users, jeremy);
 
     dzf_vec_foreach(&users, vector_user_struct_print, NULL);
 
