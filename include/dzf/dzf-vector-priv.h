@@ -59,9 +59,8 @@ typedef dzf_vec_t(char)         __dzf_vec_priv_void_t;
 
 /* -- Define something else -- */
 #define DZF_VEC_DFLT_CAP        8   /* default capacity */
-#define DZF_VECTOR_DOMAIN      "VECTOR"
-#define __dzf_vec_log(prefix, fmt, ...) \
-    __dzf_log_with_domain(DZF_VECTOR_DOMAIN, prefix, fmt, __VA_ARGS__)
+#define dzf_vec_log(prefix, fmt, ...) \
+    __dzf_log_with_domain("VECTOR", prefix, fmt, __VA_ARGS__)
 
 
 /* -- Private APIs -- */
@@ -163,16 +162,19 @@ __DZF_PRIVATE
 static inline int
 __dzf_vec_expand(__dzf_vec_priv_void_t *vec)
 {
-    size_t old_allocated_size = __dzf_vec_get_allocated_size(vec);
+    size_t new_allocated_size = 0;
 
     if (__dzf_vec_is_full(vec)) {
-        const size_t new_allocated_size = old_allocated_size * 2;
-        DZF_GUARD(__dzf_realloc(vec->data, vec->data, __dzf_vec_get_element_size(vec) * new_allocated_size));
-        DZF_GUARD(__dzf_vec_log("REALLOC", "Vector can have %zd items now\n", new_allocated_size));
-        old_allocated_size = __dzf_vec_set_allocated_size(vec, new_allocated_size);
+        new_allocated_size = __dzf_vec_get_allocated_size(vec) * 2;
+
+        vec->data = dzf_realloc(vec->data,
+                                __dzf_vec_get_element_size(vec) * new_allocated_size);
+        __dzf_vec_set_allocated_size(vec, new_allocated_size);
+
+        dzf_vec_log("REALLOC", "Vector can have %zd items now\n", new_allocated_size);
     }
 
-    return old_allocated_size;
+    return new_allocated_size;
 }
 
 
@@ -185,12 +187,12 @@ __dzf_vec_init(__dzf_vec_priv_void_t *vec,
     if (capacity <= 0)
         capacity = DZF_VEC_DFLT_CAP;
 
-    size_t required_size = elem_size * capacity;
-    __dzf_malloc(vec->data, required_size);
-    __dzf_vec_log("MALLOC ", "Vector can have %zd items now\n", capacity); 
     vec->_length = 0;
     vec->_element_size = elem_size;
     vec->_allocated_size = capacity;
+    vec->data = dzf_malloc(elem_size * capacity);
+
+    dzf_vec_log("MALLOC ", "Vector can have %zd items now\n", capacity);
 
     return 0;
 }
