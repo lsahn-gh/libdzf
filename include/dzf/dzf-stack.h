@@ -109,7 +109,7 @@ __DZF_PUBLIC
  */
 __DZF_PUBLIC
 #define dzf_stack_cap(_stkptr) \
-    ((_stkptr)->cap)
+    ((_stkptr)->capacity)
 
 
 /*!

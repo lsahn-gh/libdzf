@@ -29,7 +29,6 @@
 #endif
 
 #include "dzf-util.h"
-#include "dzf-object.h"
 
 /* -- Type Definition -- */
 /*!
@@ -48,7 +47,6 @@
  */
 #define dzf_stack_t(T) \
   struct { \
-    dzf_object_t _; \
     size_t _allocated_size; \
     size_t _element_size; \
     int top; \
@@ -62,7 +60,7 @@ typedef dzf_stack_t(char) __dzf_stack_priv_void_t;
 
 /* -- Define something else -- */
 #define _dzf_stk_log(prefix, fmt, ...) \
-    _dzf_dbugf("** DZF::STACK::" prefix " -- ", fmt, __VA_ARGS__)
+    __dzf_log_with_domain("STACK", prefix, fmt, __VA_ARGS__)
 
 
 /* -- Private APIs -- */
@@ -76,9 +74,9 @@ typedef dzf_stack_t(char) __dzf_stack_priv_void_t;
 __DZF_PRIVATE
 #define _dzf_stack_priv_init(_stkptr, _stk_cap) \
     do { \
-        dzf_malloc((_stkptr)->data, dzf_sizeof(_stkptr) * _stk_cap); \
+        __dzf_malloc((_stkptr)->data, __dzf_sizeof(_stkptr) * _stk_cap); \
         _dzf_stk_log("MALLOC", "Required size: %zd bytes.\n", \
-                dzf_sizeof(_stkptr) * _stk_cap); \
+                __dzf_sizeof(_stkptr) * _stk_cap); \
         _dzf_stack_top(_stkptr) = -1; \
         dzf_stack_cap(_stkptr) = _stk_cap; \
     } while(FALSE)
@@ -94,12 +92,12 @@ __DZF_PRIVATE
 __DZF_PRIVATE
 # define    _dzf_stack_priv_extend(_stkptr) \
     ( (dzf_stack_is_full(_stkptr) == TRUE) ? \
-      ( dzf_realloc( \
+      ( __dzf_realloc( \
             (_stkptr)->data, (_stkptr)->data, \
-            dzf_sizeof(_stkptr) * (dzf_stack_cap(_stkptr) * 2) ), \
+            __dzf_sizeof(_stkptr) * (dzf_stack_cap(_stkptr) * 2) ), \
         _dzf_stk_log( /* Print how many it is alloc'd to stderr. */ \
             "REALLOC", "Required size: %zd bytes.\n", \
-            dzf_sizeof(_stkptr) * (dzf_stack_cap(_stkptr) * 2) ), \
+            __dzf_sizeof(_stkptr) * (dzf_stack_cap(_stkptr) * 2) ), \
         dzf_stack_cap(_stkptr) = dzf_stack_cap(_stkptr) * 2 \
       ) : 0 )
 
