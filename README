@@ -4,11 +4,10 @@ libdzf is a header-only, template-like common data structures C library based on
 
 One of the most difficulties in C programming is to implement data structures with Generic Programming, such as template in C++. Because C does not support Object-Oriented Programming and Generic Programming concepts. So now, you might think that it is impossible, but it is not. We can replace those concepts with preprocessor tricks and C99 features. That is why I take up this project.
 
-Examples
+Tests
 --------
-$ cd examples
-$ make
-$ ./main
+$ make -C tests
+$ ./tests/main
 
 Documentation
 -------------
