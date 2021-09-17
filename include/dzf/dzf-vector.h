@@ -51,10 +51,22 @@ dzf_vec_new(void *self,
 }
 
 DZF_PUBLIC
-static inline int
+static inline void
+dzf_vec_data_free(void *self)
+{
+    ret_if_fail(self);
+
+    __dzf_vec_data_free(self);
+}
+
+DZF_PUBLIC
+static inline void
 dzf_vec_free(void *self)
 {
-    return __dzf_vec_free(self);
+    ret_if_fail(self);
+
+    __dzf_vec_data_free(self);
+    free(self);
 }
 
 DZF_PUBLIC

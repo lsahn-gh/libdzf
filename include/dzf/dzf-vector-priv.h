@@ -219,8 +219,8 @@ __dzf_vec_init(void *self,
 
 
 DZF_PRIVATE
-static inline int
-__dzf_vec_free(void *self)
+static inline void
+__dzf_vec_data_free(void *self)
 {
     __dzf_vec_priv_void_t *vec = self;
 
@@ -231,8 +231,6 @@ __dzf_vec_free(void *self)
     vec->_length = 0;
     vec->_element_size = 0;
     vec->_allocated_size = 0;
-
-    return 0;
 }
 
 

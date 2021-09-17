@@ -45,8 +45,6 @@ vector_main(void)
 }
 
 
-static void vector_string_print(char* *str, ...);
-
 static void
 vector_string_type(void)
 {
@@ -74,7 +72,7 @@ vector_string_type(void)
     assert(dzf_vec_get_length(&str) == 5);
     assert(strcmp(dzf_vec_get_value_at(&str, 0), "Hello World 2") == 0);
     
-    dzf_vec_free(&str);
+    dzf_vec_data_free(&str);
 }
 
 
@@ -107,7 +105,7 @@ vector_double_type(void)
     dzf_vec_foreach(&dvec, vector_double_print, NULL);
     putchar('\n');
 
-    dzf_vec_free(&dvec);
+    dzf_vec_data_free(&dvec);
 }
 
 static void
@@ -155,7 +153,7 @@ vector_user_struct_type(void)
     printf("Name : %s, Age : %d\n", temp2.name, temp2.age);
 
 
-    dzf_vec_free(&users);
+    dzf_vec_data_free(&users);
 }
 
 static void
