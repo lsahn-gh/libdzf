@@ -30,108 +30,132 @@
 
 #include "dzf-vector-priv.h"
 
+DZF_PUBLIC
+static inline int
+dzf_vec_new_with(void *self,
+                 size_t elem_size, size_t capacity)
+{
+    ret_val_if_fail(self, -1);
+
+    return __dzf_vec_init(self, elem_size, capacity);
+}
 
 DZF_PUBLIC
-#define dzf_vec_new_with(_vecptr, _elem_size, _cap_sze) \
-    __dzf_vec_init(DZF_VEC_VOID(_vecptr), _elem_size, _cap_sze)
+static inline int
+dzf_vec_new(void *self,
+            size_t elem_size)
+{
+    ret_val_if_fail(self, -1);
 
-
-DZF_PUBLIC
-#define dzf_vec_new(_vecptr, _elem_size) \
-    dzf_vec_new_with(_vecptr, _elem_size, DZF_VEC_DFLT_CAP)
-
-
-DZF_PUBLIC
-#define dzf_vec_free(_vecptr) \
-    ( __dzf_vec_free(DZF_VEC_VOID(_vecptr)) )
-
+    return __dzf_vec_init(self, elem_size, DZF_VEC_DFLT_CAP);
+}
 
 DZF_PUBLIC
-#define dzf_vec_get_length(_vecptr) \
-    ( __dzf_vec_get_length(DZF_VEC_VOID(_vecptr)) )
-
-
-DZF_PUBLIC
-#define dzf_vec_get_capacity(_vecptr) \
-    ( __dzf_vec_get_capacity(DZF_VEC_VOID(_vecptr)) )
-
+static inline int
+dzf_vec_free(void *self)
+{
+    return __dzf_vec_free(self);
+}
 
 DZF_PUBLIC
-#define dzf_vec_is_full(_vecptr) \
-    ( __dzf_vec_is_full(DZF_VEC_VOID(_vecptr)) )
+static inline int
+dzf_vec_get_length(void *self)
+{
+    ret_val_if_fail(self, -1);
 
-
-DZF_PUBLIC
-#define dzf_vec_is_empty(_vecptr) \
-    ( __dzf_vec_is_empty(DZF_VEC_VOID(_vecptr)) )
-
-
-DZF_PUBLIC
-#define dzf_vec_get_pointer(_vecptr, _idx) \
-    dzf_vec_get_pointer_at(_vecptr, _idx)
-
+    return __dzf_vec_get_length(self);
+}
 
 DZF_PUBLIC
-#define dzf_vec_get_pointer_at(_vecptr, _idx) \
-    ( assert(__dzf_vec_index_validator(DZF_VEC_VOID(_vecptr), _idx)), \
-      __dzf_vec_get_pointer_at(DZF_VEC_VOID(_vecptr), _idx) )
+static inline int
+dzf_vec_get_capacity(void *self)
+{
+    ret_val_if_fail(self, -1);
 
-
-DZF_PUBLIC
-#define dzf_vec_set_value(_vecptr, _idx, _val) \
-    dzf_vec_set_value_at(_vecptr, _idx, _val)
-
+    return __dzf_vec_get_capacity(self);
+}
 
 DZF_PUBLIC
-#define dzf_vec_set_value_at(_vecptr, _idx, _val) \
-    ( assert(__dzf_vec_index_validator(DZF_VEC_VOID(_vecptr), _idx)), \
-      __dzf_vec_set_value_at(_vecptr, _idx, _val) )
+static inline Bool
+dzf_vec_is_full(void *self)
+{
+    ret_val_if_fail(self, FALSE);
 
-
-DZF_PUBLIC
-#define dzf_vec_get_value(_vecptr, _idx) \
-    dzf_vec_get_value_at(_vecptr, _idx)
-
+    return __dzf_vec_is_full(self);
+}
 
 DZF_PUBLIC
-#define dzf_vec_get_value_at(_vecptr, _idx) \
-    ( assert(__dzf_vec_index_validator(DZF_VEC_VOID(_vecptr), _idx)), \
-      __dzf_vec_get_value_at(_vecptr, _idx) )
+static inline Bool
+dzf_vec_is_empty(void *self)
+{
+    ret_val_if_fail(self, FALSE);
 
-
-DZF_PUBLIC
-#define dzf_vec_add_at(_vecptr, _idx, _val) \
-    ( assert(0 <= _idx && _idx <= __dzf_vec_get_allocated_size(DZF_VEC_VOID(_vecptr))), \
-      __dzf_vec_insert_at(_vecptr, _idx, _val) )
+    return __dzf_vec_is_empty(self);
+}
 
 DZF_PUBLIC
-#define dzf_ved_add_head(vec, val) \
-    dzf_vec_add_at(vec, 0, val)
+static inline void *
+dzf_vec_get_pointer_at(void *self,
+                       size_t index)
+{
+    ret_val_if_fail(self, NULL);
+    ret_val_if_fail(__dzf_vec_index_validator(self, index), NULL);
+
+    return __dzf_vec_get_pointer_at(self, index);
+}
 
 DZF_PUBLIC
-#define dzf_vec_add_tail(vec, val) \
-    dzf_vec_add_at(vec, __dzf_vec_get_length(DZF_VEC_VOID(vec)), val)
-
-
-DZF_PUBLIC
-#define dzf_vec_rmv_at(_vecptr, _idx) \
-    ( assert(__dzf_vec_index_validator(DZF_VEC_VOID(_vecptr), _idx)), \
-      __dzf_vec_remove_at(DZF_VEC_VOID(_vecptr), _idx) )
+#define dzf_vec_get_pointer(self, _idx) \
+    dzf_vec_get_pointer_at(self, _idx)
 
 DZF_PUBLIC
-#define dzf_vec_rmv_head(_vecptr) \
-    dzf_vec_rmv_at(_vecptr, 0)
+#define dzf_vec_set_value(self, _idx, _val) \
+    dzf_vec_set_value_at(self, _idx, _val)
 
 DZF_PUBLIC
-#define dzf_vec_rmv_tail(_vecptr) \
-    dzf_vec_rmv_at(_vecptr, __dzf_vec_get_length(_vecptr)-1)
-
+#define dzf_vec_set_value_at(self, _idx, _val) \
+    ( assert(__dzf_vec_index_validator(self, _idx)), \
+      __dzf_vec_set_value_at(self, _idx, _val) )
 
 DZF_PUBLIC
-#define dzf_vec_foreach(_vecptr, _fptr, ...) \
+#define dzf_vec_get_value(self, _idx) \
+    dzf_vec_get_value_at(self, _idx)
+
+DZF_PUBLIC
+#define dzf_vec_get_value_at(self, _idx) \
+    ( assert(__dzf_vec_index_validator(self, _idx)), \
+      __dzf_vec_get_value_at(self, _idx) )
+
+DZF_PUBLIC
+#define dzf_vec_add_at(self, _idx, _val) \
+    ( assert(0 <= _idx && _idx <= __dzf_vec_get_allocated_size(self)), \
+      __dzf_vec_insert_at(self, _idx, _val) )
+
+DZF_PUBLIC
+#define dzf_ved_add_head(self, val) \
+    dzf_vec_add_at(self, 0, val)
+
+DZF_PUBLIC
+#define dzf_vec_add_tail(self, val) \
+    dzf_vec_add_at(self, __dzf_vec_get_length(self), val)
+
+DZF_PUBLIC
+#define dzf_vec_rmv_at(self, _idx) \
+    ( assert(__dzf_vec_index_validator(self, _idx)), \
+      __dzf_vec_remove_at(self, _idx) )
+
+DZF_PUBLIC
+#define dzf_vec_rmv_head(self) \
+    dzf_vec_rmv_at(self, 0)
+
+DZF_PUBLIC
+#define dzf_vec_rmv_tail(self) \
+    dzf_vec_rmv_at(self, __dzf_vec_get_length(self)-1)
+
+DZF_PUBLIC
+#define dzf_vec_foreach(self, _fptr, ...) \
     for ( int i = 0; \
-          i < dzf_vec_get_length(_vecptr); \
-          (_fptr)(dzf_vec_get_pointer(DZF_VEC_VOID(_vecptr), i), __VA_ARGS__), ++i )
-
+          i < dzf_vec_get_length(self); \
+          (_fptr)(dzf_vec_get_pointer(self, i), __VA_ARGS__), ++i )
 
 #endif

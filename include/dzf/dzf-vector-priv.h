@@ -54,7 +54,7 @@
     }
 
 typedef dzf_vec_t(char)         __dzf_vec_priv_void_t;
-#define DZF_VEC_VOID(_vecptr)   ((__dzf_vec_priv_void_t*)_vecptr)
+#define DZF_VEC_VOID(self)   ((__dzf_vec_priv_void_t*)self)
 
 
 /* -- Define something else -- */
@@ -66,9 +66,11 @@ typedef dzf_vec_t(char)         __dzf_vec_priv_void_t;
 /* -- Private APIs -- */
 DZF_PRIVATE
 static inline int
-__dzf_vec_set_length(__dzf_vec_priv_void_t *vec,
+__dzf_vec_set_length(void *self,
                      int length)
 {
+    __dzf_vec_priv_void_t *vec = self;
+
     /* We don't care whether size is less than and equal to 0 */
     if (vec->_length != length)
         vec->_length = length;
@@ -79,17 +81,21 @@ __dzf_vec_set_length(__dzf_vec_priv_void_t *vec,
 
 DZF_PRIVATE
 static inline int
-__dzf_vec_get_length(__dzf_vec_priv_void_t *vec)
+__dzf_vec_get_length(void *self)
 {
+    __dzf_vec_priv_void_t *vec = self;
+
     return vec->_length;
 }
 
 
 DZF_PRIVATE
 static inline size_t
-__dzf_vec_set_allocated_size(__dzf_vec_priv_void_t *vec,
+__dzf_vec_set_allocated_size(void *self,
                              size_t new_size)
 {
+    __dzf_vec_priv_void_t *vec = self;
+
     if (vec->_allocated_size != new_size)
         vec->_allocated_size = new_size;
 
@@ -99,17 +105,21 @@ __dzf_vec_set_allocated_size(__dzf_vec_priv_void_t *vec,
 
 DZF_PRIVATE
 static inline size_t
-__dzf_vec_get_allocated_size(__dzf_vec_priv_void_t *vec)
+__dzf_vec_get_allocated_size(void *self)
 {
+    __dzf_vec_priv_void_t *vec = self;
+
     return vec->_allocated_size;
 }
 
 
 DZF_PRIVATE
 static inline size_t
-__dzf_vec_set_element_size(__dzf_vec_priv_void_t *vec,
+__dzf_vec_set_element_size(void *self,
                            size_t new_size)
 {
+    __dzf_vec_priv_void_t *vec = self;
+
     if (vec->_element_size != new_size)
         vec->_element_size = new_size;
 
@@ -119,58 +129,67 @@ __dzf_vec_set_element_size(__dzf_vec_priv_void_t *vec,
 
 DZF_PRIVATE
 static inline size_t
-__dzf_vec_get_element_size(__dzf_vec_priv_void_t *vec)
+__dzf_vec_get_element_size(void *self)
 {
+    __dzf_vec_priv_void_t *vec = self;
+
     return vec->_element_size;
 }
 
 
 DZF_PRIVATE
 static inline Bool
-__dzf_vec_index_validator(__dzf_vec_priv_void_t *vec,
+__dzf_vec_index_validator(void *self,
                           int index)
 {
+    __dzf_vec_priv_void_t *vec = self;
+
     return (index >= 0 && index < __dzf_vec_get_length(vec));
 }
 
 
 DZF_PRIVATE
 static inline int
-__dzf_vec_get_capacity(__dzf_vec_priv_void_t *vec)
+__dzf_vec_get_capacity(void *self)
 {
+    __dzf_vec_priv_void_t *vec = self;
+
     return __dzf_vec_get_allocated_size(vec) - __dzf_vec_get_length(vec);
 }
 
 
 DZF_PRIVATE
 static inline Bool
-__dzf_vec_is_full(__dzf_vec_priv_void_t *vec)
+__dzf_vec_is_full(void *self)
 {
+    __dzf_vec_priv_void_t *vec = self;
+
     return (__dzf_vec_get_allocated_size(vec) == __dzf_vec_get_length(vec));
 }
 
 
 DZF_PRIVATE
 static inline Bool
-__dzf_vec_is_empty(__dzf_vec_priv_void_t *vec)
+__dzf_vec_is_empty(void *self)
 {
+    __dzf_vec_priv_void_t *vec = self;
+
     return (__dzf_vec_get_length(vec) == 0);
 }
 
 
 DZF_PRIVATE
 static inline int
-__dzf_vec_expand(__dzf_vec_priv_void_t *vec)
+__dzf_vec_expand(void *self)
 {
+    __dzf_vec_priv_void_t *vec = self;
     size_t new_allocated_size = 0;
 
     if (__dzf_vec_is_full(vec)) {
         new_allocated_size = __dzf_vec_get_allocated_size(vec) * 2;
-
         vec->data = dzf_realloc(vec->data,
                                 __dzf_vec_get_element_size(vec) * new_allocated_size);
         __dzf_vec_set_allocated_size(vec, new_allocated_size);
-
         dzf_vec_log("REALLOC", "Vector can have %zd items now\n", new_allocated_size);
     }
 
@@ -180,10 +199,11 @@ __dzf_vec_expand(__dzf_vec_priv_void_t *vec)
 
 DZF_PRIVATE
 static inline int
-__dzf_vec_init(__dzf_vec_priv_void_t *vec,
-               size_t elem_size,
-               size_t capacity)
+__dzf_vec_init(void *self,
+               size_t elem_size, size_t capacity)
 {
+    __dzf_vec_priv_void_t *vec = self;
+
     if (capacity <= 0)
         capacity = DZF_VEC_DFLT_CAP;
 
@@ -200,13 +220,14 @@ __dzf_vec_init(__dzf_vec_priv_void_t *vec,
 
 DZF_PRIVATE
 static inline int
-__dzf_vec_free(__dzf_vec_priv_void_t *vec)
-{ 
-    if (vec->data == NULL)
-        return 0;
+__dzf_vec_free(void *self)
+{
+    __dzf_vec_priv_void_t *vec = self;
 
-    free(vec->data);
-    vec->data = NULL;
+    if (vec->data != NULL) {
+        free(vec->data);
+        vec->data = NULL;
+    }
     vec->_length = 0;
     vec->_element_size = 0;
     vec->_allocated_size = 0;
@@ -217,52 +238,50 @@ __dzf_vec_free(__dzf_vec_priv_void_t *vec)
 
 DZF_PRIVATE
 static inline void *
-__dzf_vec_get_pointer_at(__dzf_vec_priv_void_t *vec,
+__dzf_vec_get_pointer_at(void *self,
                          size_t index)
 {
-    index = index * __dzf_vec_get_element_size(vec);
+    __dzf_vec_priv_void_t *vec = self;
 
+    index = index * __dzf_vec_get_element_size(vec);
     return &(vec->data[index]);
 }
 
 
 DZF_PRIVATE
-#define __dzf_vec_get_value_at(_vecptr, _idx) \
-    ((_vecptr)->data[_idx])
+#define __dzf_vec_get_value_at(self, _idx) \
+    ((self)->data[_idx])
 
 
 DZF_PRIVATE
-#define __dzf_vec_set_value_at(_vecptr, _idx, _val) \
-    ((_vecptr)->data[_idx] = _val)
+#define __dzf_vec_set_value_at(self, _idx, _val) \
+    ((self)->data[_idx] = _val)
 
 
 DZF_PRIVATE
-#define __dzf_vec_self_memmove(_vecptr, _idx, _direction) \
-   memmove(__dzf_vec_get_pointer_at(_vecptr, _idx _direction), \
-           __dzf_vec_get_pointer_at(_vecptr, _idx), \
-           __dzf_vec_get_length(_vecptr) - _idx)
+#define __dzf_vec_self_memmove(self, _idx, _direction) \
+   memmove(__dzf_vec_get_pointer_at(self, _idx _direction), \
+           __dzf_vec_get_pointer_at(self, _idx), \
+           __dzf_vec_get_length(self) - _idx)
 
 
 DZF_PRIVATE
-#define __dzf_vec_insert_at(_vecptr, _idx, _val) \
+#define __dzf_vec_insert_at(self, _idx, _val) \
     ( \
-        __dzf_vec_expand(DZF_VEC_VOID(_vecptr)), \
-        ((_idx == __dzf_vec_get_length(DZF_VEC_VOID(_vecptr))) \
-            ? NULL : __dzf_vec_self_memmove(DZF_VEC_VOID(_vecptr), \
-                                            _idx, __right_x(1))), \
-        __dzf_vec_set_value_at(_vecptr, _idx, _val), \
-        __dzf_vec_set_length(DZF_VEC_VOID(_vecptr), \
-                             __dzf_vec_get_length(DZF_VEC_VOID(_vecptr))+1) \
+        __dzf_vec_expand(self), \
+        ((_idx == __dzf_vec_get_length(self)) \
+            ? NULL : __dzf_vec_self_memmove(self, _idx, __right_x(1))), \
+        __dzf_vec_set_value_at(self, _idx, _val), \
+        __dzf_vec_set_length(self, __dzf_vec_get_length(self)+1) \
     )
 
 
 DZF_PRIVATE
-#define __dzf_vec_remove_at(_vecptr, _idx) \
+#define __dzf_vec_remove_at(self, _idx) \
     ( \
-        (_idx == __dzf_vec_get_length(_vecptr)) \
-            ? NULL : __dzf_vec_self_memmove(_vecptr, _idx+1, __left_x(1)), \
-        __dzf_vec_set_length(_vecptr, __dzf_vec_get_length(_vecptr)-1) \
+        (_idx == __dzf_vec_get_length(self)) \
+            ? NULL : __dzf_vec_self_memmove(self, _idx+1, __left_x(1)), \
+        __dzf_vec_set_length(self, __dzf_vec_get_length(self)-1) \
     )
-
 
 #endif
