@@ -30,7 +30,6 @@
 #include <string.h>
 #include <assert.h>
 
-
 /* -- Bool type -- */
 #if __STDC_VERSION__ >= 199901L
 /* if it supports c99 */
@@ -42,7 +41,6 @@
 # define TRUE     1
 # define FALSE    0
 #endif
-
 
 /* -- Public unit annotation -- */
 #define __DZF_Public_Unit_Annotation__      /* Do nothing! */
@@ -62,7 +60,6 @@
 #define DZF_DEPRECATE     __DZF_Deprecate_Unit_Annotation__
 #define DZF_DEPRECATED    DZF_DEPRECATE
 
-
 /* -- Debug message -- */
 #ifdef DZF_DEBUG
 # define    __dzf_dbugf(prefix, fmt, ...) \
@@ -81,10 +78,8 @@
     ( __dzf_strerr("** DZF -- " _msg), exit(_exitc) )
 /* -- End of debugging log -- */
 
-
 /* Block-scope guard */
 #define DZF_GUARD(_CODE) ;_CODE;
-
 
 DZF_DEPRECATE
 #define __dzf_realloc(_NPTR, _OLDPTR, _SIZE) \
@@ -92,11 +87,9 @@ DZF_DEPRECATE
       __dzf_exit_with_err("Failed to allocate memory.", -1) : \
       ((void) 0) )
 
-
 DZF_DEPRECATE
 #define __dzf_malloc(_PTR, _SIZE) \
     __dzf_realloc(_PTR, NULL, _SIZE)
-
 
 static inline void *
 dzf_realloc(void *oldptr, size_t size)
@@ -112,31 +105,22 @@ dzf_realloc(void *oldptr, size_t size)
   return newm;
 }
 
-
 static inline void *
 dzf_malloc(size_t size)
 {
   return dzf_realloc(NULL, size);
 }
 
-
 #define dzf_cmp(x, y) __dzf_cmp(x, y)
 #define __dzf_cmp(_x, _y) \
     ( ((_x) == (_y)) ? TRUE : FALSE )
-
 
 #define dzf_sizeof(ptr) __dzf_sizeof(ptr)
 #define __dzf_sizeof(_ptr) \
     sizeof((_ptr)->data[0])
 
-
-#define ret_if_fail(expr) \
-    if (!(expr)) { return; }
-
-
-#define ret_val_if_fail(expr, val) \
-    if (!(expr)) { return val; }
-
+#define __die(expr) \
+    assert((expr))
 
 /* should it be here? */
 #define __right_x(n)  +n
