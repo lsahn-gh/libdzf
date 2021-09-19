@@ -153,7 +153,7 @@ dzf_vec_is_full(void *self)
 }
 
 /*!
- * IS dzf_vec_t(T) empty?
+ * Is dzf_vec_t(T) empty?
  *
  * @param self: a vector instance of dzf_vec_t(T).
  * @return TRUE if empty, otherwise FALSE.
