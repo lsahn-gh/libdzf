@@ -1,4 +1,5 @@
-/*
+/* dzf-stack-priv.h
+ *
  * MIT License
  *
  * Copyright (c) 2018-2021 Leesoo Ahn <lsahn@ooseel.net>
@@ -21,107 +22,186 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __DZF_STACK_PRIV_H__
-#define __DZF_STACK_PRIV_H__
+#ifndef DZF_STACK_PRIV_H
+#define DZF_STACK_PRIV_H
 
-#if !defined (__LIBDZF_H_INCLUDE__)
-# error "Only <dzf/dzf.h> can be included directly!"
+#if !defined(DZF_STACK_USE_AS_PRIVATE)
+#   error "Only <dzf/dzf-stack.h> can be included directly!"
 #endif
 
 #include "dzf-util.h"
 
+#define DZF_VEC_USE_AS_PRIVATE
+#include "dzf-vector-priv.h"
+
+#define DZF_STACK_PARENT(parent) DZF_VEC_PARENT(parent)
+
 /* -- Type Definition -- */
 /*!
- * @def dzf_stack_t
- * @brief Stack type.
+ * @def dzf_stack_t(T)
+ * @brief Stack type
  *
- * @param T: A type that you want to hold.
+ * @param T: type that represents an elem of 'data' array.
  *
  * \b Examples
  * @code{.c}
- *   // Let's build three types.
- *   typedef dzf_stack_t(int) stk_int_t;
- *   typedef dzf_stack_t(struct _node) stk_node_t;
- *   typedef dzf_stack_t(char *) stk_str_t;
+ *   typedef dzf_stack_t(int) stack_int_t;
+ *   typedef dzf_stack_t(struct _node) stack_node_t;
+ *   typedef dzf_stack_t(char *) stack_str_t;
  * @endcode
  */
 #define dzf_stack_t(T) \
-  struct { \
-    size_t _allocated_size; \
-    size_t _element_size; \
-    int top; \
-    int capacity; \
-    T *data; \
-  }
+    struct { \
+        __dzf_vec_parent_t parent; \
+        T *data; \
+    }
 
 typedef dzf_stack_t(char) __dzf_stack_priv_void_t;
-#define DZF_STACK_VOID(_stkptr) ((__dzf_stack_priv_void_t*)_stkptr)
+#define DZF_STACK_VOID(self) ((__dzf_stack_priv_void_t*)self)
 
-
-/* -- Define something else -- */
-#define _dzf_stk_log(prefix, fmt, ...) \
-    __dzf_log_with_domain("STACK", prefix, fmt, __VA_ARGS__)
+#define DZF_STACK_ALLOC_SIZE 16 /* default capacity */
 
 
 /* -- Private APIs -- */
-/*
- * Attempt to allocate memory as much as size of T multiplies by capacity.
- *
- * @param _stkptr: A pointer to the dzf_stack_t(T).
- * @param _stk_cap: Capacity.
- * @return None
- */
 DZF_PRIVATE
-#define _dzf_stack_priv_init(_stkptr, _stk_cap) \
-    do { \
-        __dzf_malloc((_stkptr)->data, __dzf_sizeof(_stkptr) * _stk_cap); \
-        _dzf_stk_log("MALLOC", "Required size: %zd bytes.\n", \
-                __dzf_sizeof(_stkptr) * _stk_cap); \
-        _dzf_stack_top(_stkptr) = -1; \
-        dzf_stack_cap(_stkptr) = _stk_cap; \
-    } while(FALSE)
+static inline size_t
+__dzf_stack_set_alloc_size(void *self,
+                           size_t new_size)
+{
+    return __dzf_vec_set_alloc_size(self, new_size);
+}
 
 
-#if defined(DZF_DYNAMIC_STACK)
-/*
- * Attempt to resize alloc'd memory as much as capacity multiplies by 2.
- *
- * @param _stkptr: A pointer to the dzf_stack_t(T).
- * @return None
- */
 DZF_PRIVATE
-# define    _dzf_stack_priv_extend(_stkptr) \
-    ( (dzf_stack_is_full(_stkptr) == TRUE) ? \
-      ( __dzf_realloc( \
-            (_stkptr)->data, (_stkptr)->data, \
-            __dzf_sizeof(_stkptr) * (dzf_stack_cap(_stkptr) * 2) ), \
-        _dzf_stk_log( /* Print how many it is alloc'd to stderr. */ \
-            "REALLOC", "Required size: %zd bytes.\n", \
-            __dzf_sizeof(_stkptr) * (dzf_stack_cap(_stkptr) * 2) ), \
-        dzf_stack_cap(_stkptr) = dzf_stack_cap(_stkptr) * 2 \
-      ) : 0 )
+static inline size_t
+__dzf_stack_alloc_size(void *self)
+{
+    return __dzf_vec_get_alloc_size(self);
+}
 
-#else /* !defined(DZF_DYNAMIC_STACK) */
-/*
- * If \b DZF_DYNAMIC_STACK is off, _dzf_stack_priv_extend will be as
- * static stack and check the stack is full, or not.
- */
+
 DZF_PRIVATE
-# define    _dzf_stack_priv_extend(_stkptr) \
-    assert(dzf_stack_is_full(_stkptr) == FALSE)
+static inline size_t
+__dzf_stack_set_elem_size(void *self,
+                          size_t new_size)
+{
+    return __dzf_vec_set_elem_size(self, new_size);
+}
 
-#endif /* defined(DZF_DYNAMIC_STACK) */
 
-
-/*
- * Get where the top points to.
- *
- * @param _stkptr: A pointer to the dzf_stack_t(T).
- * @retur \c int
- */
 DZF_PRIVATE
-#define _dzf_stack_top(_stkptr) \
-    ((_stkptr)->top)
+static inline size_t
+__dzf_stack_elem_size(void *self)
+{
+    return __dzf_vec_get_elem_size(self);
+}
 
 
+DZF_PRIVATE
+static inline int
+__dzf_stack_set_top(void *self,
+                    int new_top)
+{
+    return __dzf_vec_set_length(self, new_top);
+}
+
+
+DZF_PRIVATE
+static inline int
+__dzf_stack_top(void *self)
+{
+    return __dzf_vec_get_length(self);
+}
+
+
+DZF_PRIVATE
+static inline int
+__dzf_stack_size(void *self)
+{
+    return __dzf_stack_top(self) + 1;
+}
+
+
+DZF_PRIVATE
+static inline Bool
+__dzf_stack_is_empty(void *self)
+{
+    return (__dzf_stack_top(self) == -1 ? TRUE : FALSE);
+}
+
+
+DZF_PRIVATE
+static inline Bool
+__dzf_stack_is_full(void *self)
+{
+    if (__dzf_stack_size(self) == 0)
+        return FALSE;
+    /* assume always 'alloc_size >= stack_size' */
+    return (__dzf_stack_alloc_size(self) - __dzf_stack_size(self)
+            ? FALSE : TRUE);
+}
+
+
+DZF_PRIVATE
+static inline int
+__dzf_stack_init(void *self,
+                 size_t elem_size, size_t capacity)
+{
+    __dzf_vec_init(self, elem_size, capacity /* as alloc size */);
+    __dzf_stack_set_top(self, -1);
+
+    return 0;
+}
+
+
+DZF_PRIVATE
+static inline void
+__dzf_stack_data_free(void *self)
+{
+    __dzf_vec_data_free(self);
+}
+
+
+DZF_PRIVATE
+static inline int
+__dzf_stack_try_growing(void *self)
+{
+    /*
+     * if 'DZF_STACK_STATIC_SIZE' is defined, then
+     *    die not to corrupt current buckets.
+     * otherwise
+     *    try to grow the stack up to the current 'alloc_size * 2'.
+     */
+#if defined(DZF_STACK_STATIC_SIZE)
+    /* abort at runtime if try growing */
+    __die(FALSE);
+#else
+    return __dzf_vec_try_growing(self);
 #endif
+}
+
+
+DZF_PRIVATE
+#define __dzf_stack_push(self, val) \
+    ( \
+      __dzf_stack_is_full(self) ? __dzf_stack_try_growing(self) : 0, \
+      __dzf_stack_set_top(self, __dzf_stack_size(self)), \
+      (self)->data[__dzf_stack_top(self)] = val, \
+      0 /* represents success */ \
+    )
+
+
+DZF_PRIVATE
+#define __dzf_stack_pop(self) \
+    ( \
+      (self)->data[DZF_STACK_PARENT(self)->length--] \
+    )
+
+
+DZF_PRIVATE
+#define __dzf_stack_peek(self) \
+    ( \
+      (self)->data[__dzf_stack_top(self)] \
+    )
+
+#endif /* DZF_STACK_PRIV_H */

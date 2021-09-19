@@ -1,4 +1,5 @@
-/*
+/* dzf-stack.h
+ *
  * MIT License
  *
  * Copyright (c) 2018-2021 Leesoo Ahn <lsahn@ooseel.net>
@@ -23,172 +24,235 @@
 
 /*! @file dzf-stack.h
  *
- * @brief Stack data structure.
+ * @brief Stack Type Structure.
  * 
- * Stack is a data structure based on LIFO, also known as Last In First Out.
+ * Stack is an abstract data type that has a special characteristic.
+ * LIFO, Last In First Out. Default capacity is '16' unless clarify
+ * the size via initializer.
  * 
- * dzf-stack provides two stack types,
- * - \b Static stack. Once it is built, the length of it never changed.
- * - \b Dynamic stack. It grows up and down anytime if it needs to be resized.
+ * dzf_stack_t(T) provides two types,
+ * - \b Static: never success on push once it is full.
+ * - \b Dynamic: grow up to the 'current capacity * 2'[1] if full.
  * 
- * Default: Static stack.  
- * Add \b -DDZF_DYNAMIC_STACK compile flag to switch.
+ * Default type is 'Dynamic' and use 'DZF_STACK_STATIC_SIZE' define to
+ * build with static stack type. Please see '__dzf_stack_try_growing'.
  * 
- * When no space condition is met with \b -DDZF_DYNAMIC_STACK , the capacity 
- * would be multiplied by 2 for every extension as vector.
- * @code
- *   16 // default capacity
- *   32
- *   64
- *   128
- *   256
- * @endcode
+ * [1]: grow multiplied by 2
  */
 
-#ifndef __DZF_STACK_H__
-#define __DZF_STACK_H__
+#ifndef DZF_STACK_H
+#define DZF_STACK_H
 
+#define DZF_STACK_USE_AS_PRIVATE
 #include "dzf-stack-priv.h"
 
-#define DFLT_STACK_CAP 16
 
 /*!
- * Initialize a stack with required capacity size.
+ * Initialize a dzf_stack_t(T) instance.
  * 
- * @param _stkptr: A pointer to the dzf_stack_t(T).
- * @param _cap_sze: Capacity.
- * @return None
+ * @param self: a stack instance of dzf_stack_t(T).
+ * @param elem_size: each element size in byte unit.
+ * @param capacity: number of elements in the stack.
+ * @return 0 on success.
  */
 DZF_PUBLIC
-#define dzf_stack_new_with(_stkptr, _cap_sze) \
-    _dzf_stack_priv_init(_stkptr, _cap_sze)
+static inline int
+dzf_stack_init(void *self,
+               size_t elem_size, size_t capacity)
+{
+    __die(self);
 
+    return __dzf_stack_init(self, elem_size, capacity);
+}
 
 /*!
- * Initialize a stack with default capacity (DFLT_STACK_CAP).
+ * Initialize a dzf_stack_t(T) instance with capacity, '16'.
  * 
- * This is available with \b DZF_DYNAMIC_STACK flag.
- * 
- * @param _stkptr: A pointer to the dzf_stack_t(T).
- * @return None
+ * @param self: an instance of dzf_stack_t(T).
+ * @param elem_size: each element size in byte unit.
+ * @return 0 on success.
  */
 DZF_PUBLIC
-#define dzf_stack_new(_stkptr) \
-    dzf_stack_new_with(_stkptr, DFLT_STACK_CAP)
+static inline int
+dzf_stack_new(void *self,
+              size_t elem_size)
+{
+    __die(self);
 
+    return __dzf_stack_init(self, elem_size, DZF_STACK_ALLOC_SIZE);
+}
 
 /*!
- * Free allocated memory to the data member.
- * 
- * @param _stkptr: A pointer to the dzf_stack_t(T).
- * @return None
+ * Free the data of dzf_stack_t(T).
+ * Note that it doesn't free stack itself if from malloc.
+ *
+ * @param self: an instance of dzf_stack_t(T).
+ * @return none
  */
-DZF_PUBLIC
-#define dzf_stack_free(_stkptr) \
-    for ( free((_stkptr)->data), \
-          (_stkptr)->data = NULL; \
-          FALSE; )
+DZF_PRIVATE
+static inline void
+dzf_stack_data_free(void *self)
+{
+    __die(self);
 
+    __dzf_vec_data_free(self);
+}
 
 /*!
- * Get how many elements it has.
- * 
- * @param _stkptr: A pointer to the dzf_stack_t(T).
- * @return \c int
+ * Free the data and dzf_stack_t(T) itself.
+ * Note that it must be called the stack from malloc.
+ *
+ * @param self: an instance of dzf_stack_t(T).
+ * @return none
  */
 DZF_PUBLIC
-#define dzf_stack_size(_stkptr) \
-    _dzf_stack_top(_stkptr)+1
+static inline void
+dzf_stack_free(void *self)
+{
+    __die(self);
 
+    __dzf_vec_data_free(self);
+    __dzf_stack_set_top(self, -1);
+    free(self);
+}
 
 /*!
- * Get capacity of the stack.
- * 
- * @param _stkptr: A pointer to the dzf_stack_t(T).
- * @return \c int
+ * Get the size of current used buckets.
+ *
+ * @param self: an instance of dzf_stack_t(T).
+ * @return the size of current used buckets.
  */
 DZF_PUBLIC
-#define dzf_stack_cap(_stkptr) \
-    ((_stkptr)->capacity)
+static inline int
+dzf_stack_size(void *self)
+{
+    __die(self);
 
+    return __dzf_stack_size(self);
+}
+
+DZF_PUBLIC
+static inline size_t
+dzf_stack_alloc_size(void *self)
+{
+    __die(self);
+
+    return __dzf_stack_alloc_size(self);
+}
 
 /*!
- * Check whether it is empty or not.
- * 
- * @param _stkptr: A pointer to the dzf_stack_t(T).
- * @return TRUE if it is empty, or FALSE.
+ * Get the capacity of dzf_stack_t(T).
+ *
+ * @param self: an instance of dzf_stack_t(T).
+ * @return the current capacity.
  */
 DZF_PUBLIC
-#define dzf_stack_is_empty(_stkptr) \
-    ( _dzf_stack_top(_stkptr) == -1 ? TRUE : FALSE )
+static inline size_t
+dzf_stack_capacity(void *self)
+{
+    __die(self);
 
+    return __dzf_stack_alloc_size(self);
+}
 
 /*!
- * Check whether it is full or not.
- * 
- * @param _stkptr: A pointer to the dzf_stack_t(T).
- * @return TRUE if it is full, or FALSE.
+ * Is dzf_stack_t(T) full?
+ *
+ * @param self: an instance of dzf_stack_t(T).
+ * @return TRUE if full, otherwise FALSE.
  */
 DZF_PUBLIC
-#define dzf_stack_is_full(_stkptr) \
-    ( dzf_stack_size(_stkptr) == dzf_stack_cap(_stkptr) ? TRUE : FALSE )
+static inline Bool
+dzf_stack_is_full(void *self)
+{
+    __die(self);
 
+    return __dzf_stack_is_full(self);
+}
 
 /*!
- * Push a data at the top of the stack.
- * 
- * @param _stkptr: A pointer to the dzf_stack_t(T).
- * @param value: \c T typed value.
- * @return None
+ * Is dzf_vec_t(T) empty?
+ *
+ * @param self: an instance of dzf_stack_t(T).
+ * @return TRUE if empty, otherwise FALSE.
  */
 DZF_PUBLIC
-#define dzf_stack_push(_stkptr, value) \
-    for ( _dzf_stack_priv_extend(_stkptr), \
-          ++_dzf_stack_top(_stkptr), \
-          (_stkptr)->data[_dzf_stack_top(_stkptr)] = value; \
-          FALSE; /* must be false not to loop. */ )
+static inline Bool
+dzf_stack_is_empty(void *self)
+{
+    __die(self);
 
+    return __dzf_stack_is_empty(self);
+}
 
 /*!
- * Pop a data at the top of the stack.
+ * Push a new value to the top of dzf_stack_t(T).
  * 
- * @param _stkptr: A pointer to the dzf_stack_t(T).
- * @return \c T typed value.
+ * @param self: an instance of dzf_stack_t(T).
+ * @param val: a new value.
+ * @return none
  */
 DZF_PUBLIC
-#define dzf_stack_pop(_stkptr) \
-    ( assert(dzf_stack_is_empty(_stkptr) == FALSE), \
-      --_dzf_stack_top(_stkptr), \
-      (_stkptr)->data[dzf_stack_size(_stkptr)] )
-
+#define dzf_stack_push(self, val) \
+    ( \
+      __die(self), \
+      (void)__dzf_stack_push(self, val) \
+    )
 
 /*!
- * Get a data at the top of the stack.
+ * Pop a value from the top of dzf_stack_t(T).
  * 
- * <i>Note that this does not remove the data as dzf_stack_pop.</i>
- * 
- * @param _stkptr: A pointer to the dzf_stack_t(T).
- * @return \c T typed value.
+ * @param self: an instance of dzf_stack_t(T).
+ * @return a value popped from the stack.
  */
 DZF_PUBLIC
-#define dzf_stack_at_top(_stkptr) \
-    ( assert(dzf_stack_is_empty(_stkptr) == FALSE), \
-      (_stkptr)->data[_dzf_stack_top(_stkptr)] )
-
+#define dzf_stack_pop(self) \
+    ( \
+      __die(self), \
+      __dzf_stack_pop(self) \
+    )
 
 /*!
- * Do something with the function through all elements.
- * 
- * @param _stkptr: A pointer to the dzf_stack_t(T).
- * @param _fptr: A pointer to a function that will be called.
- * @param ...: Various arguments to be passed into the function.
- * @return None
+ * Pop a value from the top of dzf_stack_t(T).
+ *
+ * Used in 'expression' of C language syntax.
+ *
+ * @param self: an instance of dzf_stack_t(T).
+ * @return a value popped from the stack.
  */
 DZF_PUBLIC
-#define dzf_stack_foreach(_stkptr, _fptr, ...) \
+#define dzf_stack_pop_as_expr(self) \
+    dzf_stack_pop(self)
+
+/*!
+ * Pop a value from the top of dzf_stack_t(T).
+ *
+ * Used in 'statement' of C language syntax.
+ * 
+ * @param self: an instance of dzf_stack_t(T).
+ * @return a value popped from the stack.
+ */
+DZF_PUBLIC
+#define dzf_stack_pop_as_stmt(self) \
+    dzf_stack_pop(self);
+
+/*!
+ * Get a value from the top of dzf_stack_t(T).
+ *
+ * @param self: an instance of dzf_stack_t(T).
+ * @return a value from the stack.
+ */
+DZF_PUBLIC
+#define dzf_stack_peek(self) \
+    ( \
+      __die(self), \
+      __dzf_stack_peek(self) \
+    )
+
+DZF_PUBLIC
+#define dzf_stack_foreach(self, _fptr, ...) \
     for ( int i = 0; \
-          i < dzf_stack_size(_stkptr); \
-          (_fptr)(&((_stkptr)->data[i]), __VA_ARGS__), ++i )
+          i < __dzf_stack_size(self); \
+          (_fptr)(&((self)->data[i]), __VA_ARGS__), ++i )
         
-
-#endif
+#endif /* DZF_STACK_H */
