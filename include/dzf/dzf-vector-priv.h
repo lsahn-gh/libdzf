@@ -1,4 +1,5 @@
-/*
+/* dzf-vector-priv.h
+ *
  * MIT License
  *
  * Copyright (c) 2018-2021 Leesoo Ahn <lsahn@ooseel.net>
@@ -21,25 +22,32 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __DZF_VEC_PRIV_H__
-#define __DZF_VEC_PRIV_H__
+#ifndef DZF_VEC_PRIV_H
+#define DZF_VEC_PRIV_H
 
-#if !defined (__LIBDZF_H_INCLUDE__)
-#   error "Only <dzf.h> can be included directly!"
+#if !defined(DZF_VEC_USE_AS_PRIVATE)
+#   error "Only <dzf/dzf-vector.h> can be included directly!"
 #endif
 
 #include "dzf-util.h"
 
+/* Not used in public */
+typedef struct __dzf_vec_parent {
+    int length;
+    size_t alloc_size;
+    size_t elem_size;
+} __dzf_vec_parent_t;
+#define DZF_VEC_PARENT(parent) ((__dzf_vec_parent_t*)parent)
+
 /* -- Type Definition -- */
 /*!
  * @def dzf_vec_t(T)
- * @brief Vector type.
+ * @brief Vector type
  *
- * @param T: A type to represent the elements.
+ * @param T: type that represents an elem of 'data' array.
  *
  * \b Examples
  * @code{.c}
- *   // Build three types.
  *   typedef dzf_vec_t(int) vec_int_t;
  *   typedef dzf_vec_t(double) vec_double_t;
  *   typedef dzf_vec_t(char *) vec_str_t;
@@ -47,20 +55,14 @@
  */
 #define dzf_vec_t(T) \
     struct { \
-        int _length; \
-        size_t _allocated_size; \
-        size_t _element_size; \
+        __dzf_vec_parent_t _unused1; \
         T *data; \
     }
 
-typedef dzf_vec_t(char)         __dzf_vec_priv_void_t;
+typedef dzf_vec_t(char) __dzf_vec_priv_void_t;
 #define DZF_VEC_VOID(self)   ((__dzf_vec_priv_void_t*)self)
 
-
-/* -- Define something else -- */
-#define DZF_VEC_DFLT_CAP        8   /* default capacity */
-#define dzf_vec_log(prefix, fmt, ...) \
-    __dzf_log_with_domain("VECTOR", prefix, fmt, __VA_ARGS__)
+#define DZF_VEC_ALLOC_SIZE 8 /* default capacity */
 
 
 /* -- Private APIs -- */
@@ -69,11 +71,11 @@ static inline int
 __dzf_vec_set_length(void *self,
                      int length)
 {
-    __dzf_vec_priv_void_t *vec = self;
+    __dzf_vec_parent_t *vec = self;
 
-    /* We don't care whether size is less than and equal to 0 */
-    if (vec->_length != length)
-        vec->_length = length;
+    /* We don't care whether length is <= 0 */
+    if (vec->length != length)
+        vec->length = length;
 
     return length;
 }
@@ -83,21 +85,21 @@ DZF_PRIVATE
 static inline int
 __dzf_vec_get_length(void *self)
 {
-    __dzf_vec_priv_void_t *vec = self;
+    __dzf_vec_parent_t *vec = self;
 
-    return vec->_length;
+    return vec->length;
 }
 
 
 DZF_PRIVATE
 static inline size_t
-__dzf_vec_set_allocated_size(void *self,
-                             size_t new_size)
+__dzf_vec_set_alloc_size(void *self,
+                         size_t new_size)
 {
-    __dzf_vec_priv_void_t *vec = self;
+    __dzf_vec_parent_t *vec = self;
 
-    if (vec->_allocated_size != new_size)
-        vec->_allocated_size = new_size;
+    if (vec->alloc_size != new_size)
+        vec->alloc_size = new_size;
 
     return new_size;
 }
@@ -105,23 +107,23 @@ __dzf_vec_set_allocated_size(void *self,
 
 DZF_PRIVATE
 static inline size_t
-__dzf_vec_get_allocated_size(void *self)
+__dzf_vec_get_alloc_size(void *self)
 {
-    __dzf_vec_priv_void_t *vec = self;
+    __dzf_vec_parent_t *vec = self;
 
-    return vec->_allocated_size;
+    return vec->alloc_size;
 }
 
 
 DZF_PRIVATE
 static inline size_t
-__dzf_vec_set_element_size(void *self,
-                           size_t new_size)
+__dzf_vec_set_elem_size(void *self,
+                        size_t new_size)
 {
-    __dzf_vec_priv_void_t *vec = self;
+    __dzf_vec_parent_t *vec = self;
 
-    if (vec->_element_size != new_size)
-        vec->_element_size = new_size;
+    if (vec->elem_size != new_size)
+        vec->elem_size = new_size;
 
     return new_size;
 }
@@ -129,11 +131,11 @@ __dzf_vec_set_element_size(void *self,
 
 DZF_PRIVATE
 static inline size_t
-__dzf_vec_get_element_size(void *self)
+__dzf_vec_get_elem_size(void *self)
 {
-    __dzf_vec_priv_void_t *vec = self;
+    __dzf_vec_parent_t *vec = self;
 
-    return vec->_element_size;
+    return vec->elem_size;
 }
 
 
@@ -142,9 +144,7 @@ static inline Bool
 __dzf_vec_index_validator(void *self,
                           int index)
 {
-    __dzf_vec_priv_void_t *vec = self;
-
-    return (index >= 0 && index < __dzf_vec_get_length(vec));
+    return (index >= 0 && index < __dzf_vec_get_length(self));
 }
 
 
@@ -152,9 +152,7 @@ DZF_PRIVATE
 static inline int
 __dzf_vec_get_capacity(void *self)
 {
-    __dzf_vec_priv_void_t *vec = self;
-
-    return __dzf_vec_get_allocated_size(vec) - __dzf_vec_get_length(vec);
+    return __dzf_vec_get_alloc_size(self) - __dzf_vec_get_length(self);
 }
 
 
@@ -162,9 +160,7 @@ DZF_PRIVATE
 static inline Bool
 __dzf_vec_is_full(void *self)
 {
-    __dzf_vec_priv_void_t *vec = self;
-
-    return (__dzf_vec_get_allocated_size(vec) == __dzf_vec_get_length(vec));
+    return (__dzf_vec_get_alloc_size(self) == __dzf_vec_get_length(self));
 }
 
 
@@ -172,28 +168,23 @@ DZF_PRIVATE
 static inline Bool
 __dzf_vec_is_empty(void *self)
 {
-    __dzf_vec_priv_void_t *vec = self;
-
-    return (__dzf_vec_get_length(vec) == 0);
+    return (__dzf_vec_get_length(self) == 0);
 }
 
 
 DZF_PRIVATE
 static inline int
-__dzf_vec_expand(void *self)
+__dzf_vec_try_growing(void *self)
 {
     __dzf_vec_priv_void_t *vec = self;
-    size_t new_allocated_size = 0;
+    size_t new_alloc_size = 0;
 
-    if (__dzf_vec_is_full(vec)) {
-        new_allocated_size = __dzf_vec_get_allocated_size(vec) * 2;
-        vec->data = dzf_realloc(vec->data,
-                                __dzf_vec_get_element_size(vec) * new_allocated_size);
-        __dzf_vec_set_allocated_size(vec, new_allocated_size);
-        dzf_vec_log("REALLOC", "Vector can have %zd items now\n", new_allocated_size);
-    }
+    new_alloc_size = __dzf_vec_get_alloc_size(vec) * 2;
+    vec->data = dzf_realloc(vec->data,
+                            __dzf_vec_get_elem_size(vec) * new_alloc_size);
+    __dzf_vec_set_alloc_size(vec, new_alloc_size);
 
-    return new_allocated_size;
+    return new_alloc_size;
 }
 
 
@@ -204,15 +195,15 @@ __dzf_vec_init(void *self,
 {
     __dzf_vec_priv_void_t *vec = self;
 
-    if (capacity <= 0)
-        capacity = DZF_VEC_DFLT_CAP;
+    if (capacity <= DZF_VEC_ALLOC_SIZE)
+        capacity = DZF_VEC_ALLOC_SIZE;
 
-    vec->_length = 0;
-    vec->_element_size = elem_size;
-    vec->_allocated_size = capacity;
+    memset(vec, 0, sizeof(*vec));
+
+    __dzf_vec_set_length(vec, 0);
+    __dzf_vec_set_elem_size(vec, elem_size);
+    __dzf_vec_set_alloc_size(vec, capacity);
     vec->data = dzf_malloc(elem_size * capacity);
-
-    dzf_vec_log("MALLOC ", "Vector can have %zd items now\n", capacity);
 
     return 0;
 }
@@ -228,9 +219,9 @@ __dzf_vec_data_free(void *self)
         free(vec->data);
         vec->data = NULL;
     }
-    vec->_length = 0;
-    vec->_element_size = 0;
-    vec->_allocated_size = 0;
+    __dzf_vec_set_length(vec, 0);
+    __dzf_vec_set_elem_size(vec, 0);
+    __dzf_vec_set_alloc_size(vec, 0);
 }
 
 
@@ -241,8 +232,7 @@ __dzf_vec_get_pointer_at(void *self,
 {
     __dzf_vec_priv_void_t *vec = self;
 
-    index = index * __dzf_vec_get_element_size(vec);
-    return &(vec->data[index]);
+    return &(vec->data[index * __dzf_vec_get_elem_size(vec)]);
 }
 
 
@@ -266,7 +256,7 @@ DZF_PRIVATE
 DZF_PRIVATE
 #define __dzf_vec_insert_at(self, _idx, _val) \
     ( \
-        __dzf_vec_expand(self), \
+        __dzf_vec_is_full(self) ? __dzf_vec_try_growing(self) : 0, \
         ((_idx == __dzf_vec_get_length(self)) \
             ? NULL : __dzf_vec_self_memmove(self, _idx, __right_x(1))), \
         __dzf_vec_set_value_at(self, _idx, _val), \
@@ -282,4 +272,4 @@ DZF_PRIVATE
         __dzf_vec_set_length(self, __dzf_vec_get_length(self)-1) \
     )
 
-#endif
+#endif /* DZF_VEC_PRIV_H */

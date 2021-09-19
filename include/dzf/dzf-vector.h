@@ -1,4 +1,5 @@
-/*
+/* dzf-vector.h
+ *
  * MIT License
  *
  * Copyright (c) 2018-2021 Leesoo Ahn <lsahn@ooseel.net>
@@ -21,145 +22,305 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __DZF_VEC_H__
-#define __DZF_VEC_H__
+/*! @file dzf-vector.h
+ *
+ * @brief Vector Type Structure.
+ *
+ * Vector is an abstract data type that automatically grow its buckets size.
+ * Default capacity is '8' unless clarify the size via initializer.
+ *
+ * dzf_vec_t(T) has the following characteristics,
+ * - automatically grow its size up to the 'current size * 2'.
+ *
+ * Note that it doesn't shrink its size although it is empty.
+ */
 
-#if !defined (__LIBDZF_H_INCLUDE__)
-#   error "Only <dzf.h> can be included directly!"
-#endif
+#ifndef DZF_VEC_H
+#define DZF_VEC_H
 
+#define DZF_VEC_USE_AS_PRIVATE
 #include "dzf-vector-priv.h"
 
+
+/*!
+ * Initialize a vector.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param elem_size: each element size in byte unit.
+ * @param capacity: number of elements in the vector.
+ */
 DZF_PUBLIC
 static inline int
 dzf_vec_new_with(void *self,
                  size_t elem_size, size_t capacity)
 {
-    ret_val_if_fail(self, -1);
+    __die(self);
 
     return __dzf_vec_init(self, elem_size, capacity);
 }
 
+/*!
+ * Initialize a vector with default capacity, '8'.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param elem_size: each element size in byte unit.
+ */
 DZF_PUBLIC
 static inline int
 dzf_vec_new(void *self,
             size_t elem_size)
 {
-    ret_val_if_fail(self, -1);
+    __die(self);
 
-    return __dzf_vec_init(self, elem_size, DZF_VEC_DFLT_CAP);
+    return __dzf_vec_init(self, elem_size, DZF_VEC_ALLOC_SIZE);
 }
 
+/*!
+ * Free the data of dzf_vec_t(T).
+ * Note that it doesn't free vector itself if from malloc.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ */
 DZF_PUBLIC
 static inline void
 dzf_vec_data_free(void *self)
 {
-    ret_if_fail(self);
+    __die(self);
 
     __dzf_vec_data_free(self);
 }
 
+/*!
+ * Free the data and dzf_vec_t(T) itself.
+ * Note that it must be called the vector from malloc.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @return none
+ */
 DZF_PUBLIC
 static inline void
 dzf_vec_free(void *self)
 {
-    ret_if_fail(self);
+    __die(self);
 
     __dzf_vec_data_free(self);
     free(self);
 }
 
+/*!
+ * Get the size of current used buckets.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @return the size of current used buckets.
+ */
 DZF_PUBLIC
 static inline int
 dzf_vec_get_length(void *self)
 {
-    ret_val_if_fail(self, -1);
+    __die(self);
 
     return __dzf_vec_get_length(self);
 }
 
+/*!
+ * Get the capacity of dzf_vec_t(T).
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @return the current capacity.
+ */
 DZF_PUBLIC
 static inline int
 dzf_vec_get_capacity(void *self)
 {
-    ret_val_if_fail(self, -1);
+    __die(self);
 
     return __dzf_vec_get_capacity(self);
 }
 
+/*!
+ * Is dzf_vec_t(T) full?
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @return TRUE if full, otherwise FALSE.
+ */
 DZF_PUBLIC
 static inline Bool
 dzf_vec_is_full(void *self)
 {
-    ret_val_if_fail(self, FALSE);
+    __die(self);
 
     return __dzf_vec_is_full(self);
 }
 
+/*!
+ * IS dzf_vec_t(T) empty?
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @return TRUE if empty, otherwise FALSE.
+ */
 DZF_PUBLIC
 static inline Bool
 dzf_vec_is_empty(void *self)
 {
-    ret_val_if_fail(self, FALSE);
+    __die(self);
 
     return __dzf_vec_is_empty(self);
 }
 
+/*!
+ * Get a pointer at the elem of the index.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param index: an index to the elem.
+ * @return a pointer to the elem of the index.
+ */
 DZF_PUBLIC
 static inline void *
 dzf_vec_get_pointer_at(void *self,
                        size_t index)
 {
-    ret_val_if_fail(self, NULL);
-    ret_val_if_fail(__dzf_vec_index_validator(self, index), NULL);
+    __die(self);
+
+    if (!__dzf_vec_index_validator(self, index))
+        return NULL;
 
     return __dzf_vec_get_pointer_at(self, index);
 }
 
+/*!
+ * Get a pointer at the elem of the index.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param index: an index to the elem.
+ * @return a pointer to the elem of the index.
+ */
 DZF_PUBLIC
 #define dzf_vec_get_pointer(self, _idx) \
     dzf_vec_get_pointer_at(self, _idx)
 
+/*!
+ * Set a new value to the elem of the index.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param _idx: an index to the elem.
+ * @param _val: a new value.
+ * @return none
+ */
 DZF_PUBLIC
 #define dzf_vec_set_value(self, _idx, _val) \
     dzf_vec_set_value_at(self, _idx, _val)
 
+/*!
+ * Set a new value to the elem of the index.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param _idx: an index to the elem.
+ * @param _val: a new value.
+ * @return none
+ */
 DZF_PUBLIC
 #define dzf_vec_set_value_at(self, _idx, _val) \
-    ( assert(__dzf_vec_index_validator(self, _idx)), \
+    ( __die(__dzf_vec_index_validator(self, _idx)), \
       __dzf_vec_set_value_at(self, _idx, _val) )
 
+/*!
+ * Get a value at the elem of the index.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param _idx: an index to the elem.
+ * @return a value at the elem of the index.
+ */
 DZF_PUBLIC
 #define dzf_vec_get_value(self, _idx) \
     dzf_vec_get_value_at(self, _idx)
 
+/*!
+ * Get a value at the elem of the index.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param _idx: an index to the elem.
+ * @return a value at the elem of the index.
+ */
 DZF_PUBLIC
 #define dzf_vec_get_value_at(self, _idx) \
-    ( assert(__dzf_vec_index_validator(self, _idx)), \
+    ( __die(__dzf_vec_index_validator(self, _idx)), \
       __dzf_vec_get_value_at(self, _idx) )
 
+/*!
+ * Add a new value at the index.
+ *
+ * Note that this is slow.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param _idx: an index to store the value.
+ * @param _val: a new value.
+ * @return none.
+ */
 DZF_PUBLIC
 #define dzf_vec_add_at(self, _idx, _val) \
-    ( assert(0 <= _idx && _idx <= __dzf_vec_get_allocated_size(self)), \
+    ( assert(0 <= _idx && _idx <= __dzf_vec_get_alloc_size(self)), \
       __dzf_vec_insert_at(self, _idx, _val) )
 
+/*!
+ * Add a new value at the head of dzf_vec_t(T).
+ *
+ * Note that this is slow.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param _val: a new value.
+ * @return none.
+ */
 DZF_PUBLIC
 #define dzf_ved_add_head(self, val) \
     dzf_vec_add_at(self, 0, val)
 
+/*!
+ * Add a new value at the tail of dzf_vec_t(T).
+ *
+ * Note that this is faster than adding at the head.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param _val: a new value.
+ * @return none.
+ */
 DZF_PUBLIC
 #define dzf_vec_add_tail(self, val) \
     dzf_vec_add_at(self, __dzf_vec_get_length(self), val)
 
+/*!
+ * Remove a value at the index of dzf_vec_t(T).
+ *
+ * Note that this is slow.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param _val: a new value.
+ * @return none.
+ */
 DZF_PUBLIC
 #define dzf_vec_rmv_at(self, _idx) \
-    ( assert(__dzf_vec_index_validator(self, _idx)), \
+    ( __die(__dzf_vec_index_validator(self, _idx)), \
       __dzf_vec_remove_at(self, _idx) )
 
+/*!
+ * Remove a value at the head of dzf_vec_t(T).
+ *
+ * Note that this is slow.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @return none.
+ */
 DZF_PUBLIC
 #define dzf_vec_rmv_head(self) \
     dzf_vec_rmv_at(self, 0)
 
+/*!
+ * Remove a value at the tail of dzf_vec_t(T).
+ *
+ * Note that this is faster than removing at the head.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @return none.
+ */
 DZF_PUBLIC
 #define dzf_vec_rmv_tail(self) \
     dzf_vec_rmv_at(self, __dzf_vec_get_length(self)-1)
@@ -170,4 +331,4 @@ DZF_PUBLIC
           i < dzf_vec_get_length(self); \
           (_fptr)(dzf_vec_get_pointer(self, i), __VA_ARGS__), ++i )
 
-#endif
+#endif /* DZF_VEC_H */
