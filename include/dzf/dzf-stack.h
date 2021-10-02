@@ -171,7 +171,7 @@ dzf_stack_is_full(void *self)
 }
 
 /*!
- * Is dzf_vec_t(T) empty?
+ * Is dzf_stack_t(T) empty?
  *
  * @param self: an instance of dzf_stack_t(T).
  * @return TRUE if empty, otherwise FALSE.
@@ -196,7 +196,7 @@ DZF_PUBLIC
 #define dzf_stack_push(self, val) \
     ( \
       __die(self), \
-      (void)__dzf_stack_push(self, val) \
+      __dzf_stack_push(self, val) \
     )
 
 /*!

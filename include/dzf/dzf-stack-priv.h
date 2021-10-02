@@ -187,7 +187,7 @@ DZF_PRIVATE
       __dzf_stack_is_full(self) ? __dzf_stack_try_growing(self) : 0, \
       __dzf_stack_set_top(self, __dzf_stack_size(self)), \
       (self)->data[__dzf_stack_top(self)] = val, \
-      0 /* represents success */ \
+      (void)0 /* represents success */ \
     )
 
 
