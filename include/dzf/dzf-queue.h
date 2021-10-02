@@ -1,4 +1,5 @@
-/*
+/* dzf-queue.h
+ *
  * MIT License
  *
  * Copyright (c) 2018-2021 Leesoo Ahn <lsahn@ooseel.net>
@@ -23,170 +24,207 @@
 
 /*! @file dzf-queue.h
  *
- * @brief Queue data structure.
- * 
- * Queue is a data structure based on FIFO, also known as First In First Out.
- * 
- * dzf-queue is based on Circular Queue.
+ * @brief Queue Type Structure.
+ *
+ * Queue is an abstract data type that has a special characteristic.
+ * FIFO, First In First Out. Default capacity is '16' unless clarify
+ * the size via initializer.
+ *
+ * dzf_queue_t(T) is based on circular queue type.
  */
 
-#ifndef __DZF_QUEUE_H__
-#define __DZF_QUEUE_H__
+#ifndef DZF_QUEUE_H
+#define DZF_QUEUE_H
 
-#if !defined (__LIBDZF_H_INCLUDE__)
-#error "Only <dzf.h> can be included directly!"
-#endif
-
+#define DZF_QUEUE_USE_AS_PRIVATE
 #include "dzf-queue-priv.h"
 
-#define DFLT_CAP 16
-
 
 /*!
- * Initialize a queue with required capacity size.
+ * Initialize a dzf_queue_t(T) instance.
  * 
- * @param _qptr: A pointer to the dzf_queue_t(T).
- * @param _cap_sze: Capacity.
- * @return None
+ * @param self: an instance of dzf_queue_t(T).
+ * @param elem_size: each element size in byte unit.
+ * @param capacity: number of elements in the queue.
+ * @return 0 on success.
  */
 DZF_PUBLIC
-#define dzf_queue_new_with(_qptr, _cap_sze) \
-    _dzf_queue_priv_init(_qptr, _cap_sze)
+static inline int
+dzf_queue_init(void *self,
+               size_t elem_size, size_t capacity)
+{
+    __die(self);
 
-
-/*
- * Is dynamic circular queue necessary?
- * 
- * If so ...
- * It should be as follow, and need to
- * implement something more as Vector, or
- * Try it with Vector.
- * 
-#define dzf_queue_new(_qptr) \
-    _dzf_queue_priv_init(_qptr, DFLT_CAP)
- */
-
+    return __dzf_queue_init(self, elem_size, capacity);
+}
 
 /*!
- * Free allocated memory to the data member.
+ * Initialize a dzf_queue_t(T) instance with capacity '16'.
  * 
- * @param _qptr: A pointer to the dzf_queue_t(T).
- * @return None
+ * @param self: an instance of dzf_queue_t(T).
+ * @param elem_size: each element size in byte unit.
+ * @return 0 on success.
  */
 DZF_PUBLIC
-#define dzf_queue_free(_qptr) \
-    for ( free((_qptr)->data), \
-          (_qptr)->data = NULL; \
-          FALSE; )
+static inline int
+dzf_queue_new(void *self,
+              size_t elem_size)
+{
+    __die(self);
 
+    return __dzf_queue_init(self, elem_size, DZF_QUEUE_ALLOC_SIZE);
+}
 
 /*!
- * Get capacity of the queue.
- * 
- * @param _qptr: A pointer to the dzf_queue_t(T).
- * @return \c int
+ * Free the data of dzf_queue_t(T).
+ * Note that it doesn't free queue itself if from malloc.
+ *
+ * @param self: an instance of dzf_queue_t(T).
+ * @return none
  */
 DZF_PUBLIC
-#define dzf_queue_cap(_qptr) \
-    ((_qptr)->_cap)
+static inline void
+dzf_queue_data_free(void *self)
+{
+    __die(self);
 
+    __dzf_queue_data_free(self);
+}
 
 /*!
- * Get current front index of the queue.  
- * It is used for implementing enqueue and dequeue.
- * 
- * @param _qptr: A pointer to the dzf_queue_t(T).
- * @return \c int
+ * Free the data and dzf_queue_t(T) itself.
+ * Note that the instance must be alloc'ed from malloc.
+ *
+ * @param self: an instance of dzf_queue_t(T).
+ * @return none
  */
 DZF_PUBLIC
-#define dzf_queue_front(_qptr) \
-    ((_qptr)->front)
+static inline void
+dzf_queue_free(void *self)
+{
+    __die(self);
 
+    __dzf_queue_data_free(self);
+    free(self);
+}
 
 /*!
- * Get current rear index of the queue.  
- * It is used for implementing enqueue and dequeue.
- * 
- * @param _qptr: A pointer to the dzf_queue_t(T).
- * @return \c int
+ * Get the size of each element of dzf_queue_t(T).
+ *
+ * @param self: an instance of dzf_queue_t(T).
+ * @return the size of each element.
  */
 DZF_PUBLIC
-#define dzf_queue_rear(_qptr) \
-    ((_qptr)->rear)
+static inline size_t
+dzf_queue_elem_size(void *self)
+{
+    __die(self);
 
+    return __dzf_queue_elem_size(self);
+}
 
 /*!
- * Check whether it is empty or not.
- * 
- * @param _qptr: A pointer to the dzf_queue_t(T).
- * @return TRUE if it is empty, or FALSE.
+ * Get the capacity of dzf_queue_t(T).
+ *
+ * @param self: an instance of dzf_queue_t(T).
+ * @return the current capacity.
  */
 DZF_PUBLIC
-#define dzf_queue_is_empty(_qptr) \
-    ( dzf_queue_front(_qptr) == -1 ? TRUE : FALSE )
+static inline size_t
+dzf_queue_capacity(void *self)
+{
+    __die(self);
 
+    return __dzf_queue_capacity(self);
+}
 
 /*!
- * Check whether it is full or not.
- * 
- * @param _qptr: A pointer to the dzf_queue_t(T).
- * @return TRUE if it is full, or FALSE.
+ * Get the 'front' value of dzf_queue_t(T).
+ *
+ * @param self: an instance of dzf_queue_t(T).
+ * @return the current front value.
  */
 DZF_PUBLIC
-#define dzf_queue_is_full(_qptr) \
-    ( ((dzf_queue_rear(_qptr)+1) % dzf_queue_cap(_qptr)) == dzf_queue_front(_qptr) \
-                                 ? TRUE : FALSE )
+static inline int
+dzf_queue_front(void *self)
+{
+    __die(self);
 
+    return __dzf_queue_front(self);
+}
 
 /*!
- * Enqueue a data at the current rear index of the queue.
- * 
- * @param _qptr: A pointer to the dzf_queue_t(T).
- * @param value: \c T typed value.
- * @return None
+ * Get the 'rear' value of dzf_queue_t(T).
+ *
+ * @param self: an instance of dzf_queue_t(T).
+ * @return the current rear value.
  */
 DZF_PUBLIC
-#define dzf_queue_enq(_qptr, value) \
-    for ( assert(dzf_queue_is_full(_qptr) == FALSE), \
-          dzf_queue_rear(_qptr) = (dzf_queue_rear(_qptr)+1) % dzf_queue_cap(_qptr), \
-          (_qptr)->data[dzf_queue_rear(_qptr)] = value, \
-          (dzf_queue_front(_qptr) == -1 ? dzf_queue_front(_qptr) = 0 : 0); \
-          FALSE; /* must be false not to loop. */ )
-    
+static inline int
+dzf_queue_rear(void *self)
+{
+    __die(self);
+
+    return __dzf_queue_rear(self);
+}
 
 /*!
- * Dequeue a data at the current front of the queue.
- * 
- * @param _qptr: A pointer to the dzf_queue_t(T).
- * @param _var: A variable to hold the data.
- * @return None
+ * Is dzf_queue_t(T) full?
+ *
+ * @param self: an instance of dzf_queue_t(T).
+ * @return TRUE if full, otherwise FALSE.
  */
 DZF_PUBLIC
-#define dzf_queue_deq(_qptr, _var) \
-    for ( assert(dzf_queue_is_empty(_qptr) == FALSE), \
-          _var = (_qptr)->data[dzf_queue_front(_qptr)], \
-          ( dzf_queue_front(_qptr) == dzf_queue_rear(_qptr) \
-            ? (dzf_queue_front(_qptr) = dzf_queue_rear(_qptr) = -1) \
-            : (dzf_queue_front(_qptr) = (dzf_queue_front(_qptr)+1) % dzf_queue_cap(_qptr)) \
-          ); \
-          FALSE; )
+static inline Bool
+dzf_queue_is_full(void *self)
+{
+    __die(self);
 
+    return __dzf_queue_is_full(self);
+}
 
 /*!
- * Do something with the function through all elements.
- * 
- * @param _qptr: A pointer to the dzf_queue_t(T).
- * @param _fptr: A pointer to a function that will be called.
- * @param ...: Various arguments to be passed into the function.
- * @return None
+ * Is dzf_queue_t(T) empty?
+ *
+ * @param self: an instance of dzf_queue_t(T).
+ * @return TRUE if empty, otherwise FALSE.
  */
 DZF_PUBLIC
-#define dzf_queue_foreach(_qptr, _fptr, ...) \
-    for ( int i = dzf_queue_front(_qptr); \
-          i == dzf_queue_rear(_qptr)+1 \
-          ? FALSE : ( (_fptr)(&((_qptr)->data[i]), __VA_ARGS__), \
-                      (i = (i+1) % dzf_queue_cap(_qptr)) ); \
-        )
+static inline Bool
+dzf_queue_is_empty(void *self)
+{
+    __die(self);
 
+    return __dzf_queue_is_empty(self);
+}
 
-#endif
+/*!
+ * Enqueue a new value to the tail of dzf_queue_t(T).
+ * 
+ * @param self: an instance of dzf_queue_t(T).
+ * @param val: a new value.
+ * @return none
+ */
+DZF_PUBLIC
+#define dzf_queue_enq(self, value) \
+    ( \
+      __die(self), \
+      __die(!__dzf_queue_is_full(self)), \
+      __dzf_queue_push_tail(self, value) \
+    )
+
+/*!
+ * Dequeue a value from the head of dzf_queue_t(T).
+ *
+ * @param self: an instance of dzf_queue_t(T).
+ * @return a value dequeued from the queue.
+ */
+DZF_PUBLIC
+#define dzf_queue_deq(self) \
+    ( \
+      __die(self), \
+      __die(!__dzf_queue_is_empty(self)), \
+      __dzf_queue_pop_head(self) \
+    )
+
+#endif /* DZF_QUEUE_H */

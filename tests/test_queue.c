@@ -1,7 +1,8 @@
-/*
+/* test_queue.c
+ *
  * MIT License
  *
- * Copyright (c) 2018 Yi-Soo An <yisooan@gmail.com>
+ * Copyright (c) 2018-2021 Leesoo Ahn <lsahn@ooseel.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -22,11 +23,9 @@
  */
 
 #include "test.h"
-#include "dzf/dzf.h"
+#include "dzf/dzf-queue.h"
 
-static void queue_print(const int *, ...);
 static void queue_int_type(void);
-
 static void queue_func_ptr_type(void);
 
 void
@@ -44,38 +43,39 @@ queue_main(void)
 static void
 queue_int_type(void)
 {
-    typedef dzf_queue_t(int) qint_t;
-    qint_t queue;
+    typedef dzf_queue_t(int) queue_int_t;
+    queue_int_t queue;
+    int i;
 
-    dzf_queue_new_with(&queue, 10);
-
-    for (int i = 0; i < 100; i++) {
-        int tmp;
-        dzf_queue_enq(&queue, i);
-        dzf_queue_deq(&queue, tmp);
-        (void)tmp;  /* To avoid unused warning. */
-    }
-
+    dzf_queue_new(&queue, sizeof(int));
+    assert(dzf_queue_capacity(&queue) == DZF_QUEUE_ALLOC_SIZE);
+    assert(dzf_queue_elem_size(&queue) == sizeof(int));
     assert(dzf_queue_front(&queue) == -1);
+    assert(dzf_queue_rear(&queue) == -1);
+
+    for (i = 0; i < 100; i++) {
+        dzf_queue_enq(&queue, i);
+        (void)dzf_queue_deq(&queue);
+    }
+    assert(dzf_queue_front(&queue) == -1);
+    assert(dzf_queue_rear(&queue) == -1);
 
     dzf_queue_enq(&queue, 4);
     dzf_queue_enq(&queue, 100);
     dzf_queue_enq(&queue, 200);
-
     assert(dzf_queue_rear(&queue) == 2);
 
-    dzf_queue_foreach(&queue, queue_print, NULL);
-    putchar('\n');
+    assert(dzf_queue_deq(&queue) == 4);
+    assert(dzf_queue_deq(&queue) == 100);
+    assert(dzf_queue_deq(&queue) == 200);
 
-    dzf_queue_free(&queue);
+    for (i = 0; i < 100; i++) {
+        if (!dzf_queue_is_full(&queue))
+            dzf_queue_enq(&queue, i);
+    }
+
+    dzf_queue_data_free(&queue);
 }
-
-static void
-queue_print(const int *item, ...)
-{
-    printf("%d ", *item);
-}
-
 
 
 /* Test for function pointer type */
@@ -88,25 +88,27 @@ void *test(void) {
 static void
 queue_func_ptr_type(void)
 {
-    typedef dzf_queue_t(pfunc) qpfn_t;
-    qpfn_t queue;
+    typedef dzf_queue_t(pfunc) queue_pfn_t;
+    queue_pfn_t queue;
 
-    pfunc tmp;
+    volatile pfunc tmp;
 
-    dzf_queue_new_with(&queue, 5);
-
+    dzf_queue_init(&queue, sizeof(pfunc), 32);
+    assert(dzf_queue_capacity(&queue) == 32);
+    assert(dzf_queue_elem_size(&queue) == sizeof(pfunc));
     assert(dzf_queue_front(&queue) == -1);
     assert(dzf_queue_rear(&queue) == -1);
 
     dzf_queue_enq(&queue, test);
 
+    assert(dzf_queue_front(&queue) == 0);
     assert(dzf_queue_rear(&queue) == 0);
 
-    dzf_queue_deq(&queue, tmp);
+    tmp = dzf_queue_deq(&queue);
 
     if (tmp() == NULL) {    /* tmp is as test function */
         printf("tmp has been run.\n");
     }
 
-    dzf_queue_free(&queue);
+    dzf_queue_data_free(&queue);
 }
