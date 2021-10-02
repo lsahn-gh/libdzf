@@ -1,7 +1,8 @@
-/*
+/* dzf-util.h
+ *
  * MIT License
  *
- * Copyright (c) 2018 Yi-Soo An <yisooan@gmail.com>
+ * Copyright (c) 2018-2021 Leesoo Ahn <lsahn@ooseel.net>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -21,8 +22,8 @@
  * THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#ifndef __DZF_UTIL_H__
-#define __DZF_UTIL_H__
+#ifndef DZF_UTIL_H
+#define DZF_UTIL_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,17 +31,9 @@
 #include <string.h>
 #include <assert.h>
 
-/* -- Bool type -- */
-#if __STDC_VERSION__ >= 199901L
-/* if it supports c99 */
-# define Bool     bool
-# define TRUE     true
-# define FALSE    false
-#else
-# define Bool     int
-# define TRUE     1
-# define FALSE    0
-#endif
+#define Bool     int
+#define TRUE     1
+#define FALSE    0
 
 /* -- Public unit annotation -- */
 #define __DZF_Public_Unit_Annotation__      /* Do nothing! */
@@ -78,8 +71,6 @@
     ( __dzf_strerr("** DZF -- " _msg), exit(_exitc) )
 /* -- End of debugging log -- */
 
-/* Block-scope guard */
-#define DZF_GUARD(_CODE) ;_CODE;
 
 DZF_DEPRECATE
 #define __dzf_realloc(_NPTR, _OLDPTR, _SIZE) \
@@ -127,4 +118,4 @@ dzf_malloc(size_t size)
 #define __left_x(n)   -n
 
 
-#endif
+#endif /* DZF_UTIL_H */
