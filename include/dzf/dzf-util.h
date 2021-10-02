@@ -53,35 +53,6 @@
 #define DZF_DEPRECATE     __DZF_Deprecate_Unit_Annotation__
 #define DZF_DEPRECATED    DZF_DEPRECATE
 
-/* -- Debug message -- */
-#ifdef DZF_DEBUG
-# define    __dzf_dbugf(prefix, fmt, ...) \
-                (void)fprintf(stderr, prefix " -- " fmt, __VA_ARGS__)
-#else
-# define    __dzf_dbugf(prefix, fmt, ...) ((void) 0)
-#endif
-
-#define __dzf_log_with_domain(domain, prefix, fmt, ...) \
-    __dzf_dbugf("** DZF::" domain "::" prefix, fmt, __VA_ARGS__)
-    
-#define __dzf_strerr(_msg) \
-    fprintf(stderr, _msg "\n")
-
-#define __dzf_exit_with_err(_msg, _exitc) \
-    ( __dzf_strerr("** DZF -- " _msg), exit(_exitc) )
-/* -- End of debugging log -- */
-
-
-DZF_DEPRECATE
-#define __dzf_realloc(_NPTR, _OLDPTR, _SIZE) \
-    ( (_NPTR = realloc(_OLDPTR, _SIZE)) == NULL ? \
-      __dzf_exit_with_err("Failed to allocate memory.", -1) : \
-      ((void) 0) )
-
-DZF_DEPRECATE
-#define __dzf_malloc(_PTR, _SIZE) \
-    __dzf_realloc(_PTR, NULL, _SIZE)
-
 static inline void *
 dzf_realloc(void *oldptr, size_t size)
 {
@@ -90,8 +61,8 @@ dzf_realloc(void *oldptr, size_t size)
   if (size < 1)
     return newm;
 
-  if (!(newm = realloc(oldptr, size), newm))
-    __dzf_exit_with_err("Failed to allocate memory", -1);
+  if (!(newm = realloc(oldptr, size)))
+      exit(-1);
 
   return newm;
 }
