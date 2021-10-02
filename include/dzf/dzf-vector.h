@@ -325,10 +325,18 @@ DZF_PUBLIC
 #define dzf_vec_rmv_tail(self) \
     dzf_vec_rmv_at(self, __dzf_vec_get_length(self)-1)
 
+/*!
+ * Walk through all elements in dzf_vec_t(T).
+ *
+ * @param elem: a pointer to the type of element of dzf_vec_t(T).
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param idx_var: an integer type variable.
+ */
 DZF_PUBLIC
-#define dzf_vec_foreach(self, _fptr, ...) \
-    for ( int i = 0; \
-          i < dzf_vec_get_length(self); \
-          (_fptr)(dzf_vec_get_pointer(self, i), __VA_ARGS__), ++i )
+#define dzf_vec_for_each(elem, self, idx_var) \
+    for (idx_var = 0; \
+         idx_var < __dzf_vec_get_length(self) && \
+         ( elem = __dzf_vec_get_pointer_at(self, idx_var), 1 ); \
+         idx_var++)
 
 #endif /* DZF_VEC_H */
