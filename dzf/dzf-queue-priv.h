@@ -32,10 +32,9 @@
 #include "dzf-util.h"
 #include "dzf-barrier.h"
 
-#define DZF_VEC_USE_AS_PRIVATE
-#include "dzf-vector-priv.h"
-
-#define DZF_QUEUE_PARENT(parent) DZF_VEC_PARENT(parent)
+#define DZF_BASE_USE_AS_PRIVATE
+#include "dzf-base.h"
+#undef  DZF_BASE_USE_AS_PRIVATE
 
 /* -- Type Definition -- */
 /*!
@@ -53,7 +52,7 @@
  */
 #define dzf_queue_t(T) \
     struct { \
-        __dzf_vec_parent_t parent; \
+        __dzf_base_t _unused1; \
         int front; \
         int rear; \
         T hold_elem; \
@@ -72,7 +71,7 @@ static inline size_t
 __dzf_queue_set_alloc_size(void *self,
                            size_t new_size)
 {
-    return __dzf_vec_set_alloc_size(self, new_size);
+    return __dzf_base_set_alloc_size(self, new_size);
 }
 #define __dzf_queue_set_capacity __dzf_queue_set_alloc_size
 
@@ -81,7 +80,7 @@ DZF_PRIVATE
 static inline size_t
 __dzf_queue_alloc_size(void *self)
 {
-    return __dzf_vec_get_alloc_size(self);
+    return __dzf_base_get_alloc_size(self);
 }
 #define __dzf_queue_capacity __dzf_queue_alloc_size
 
@@ -91,7 +90,7 @@ static inline size_t
 __dzf_queue_set_elem_size(void *self,
                           size_t new_size)
 {
-    return __dzf_vec_set_elem_size(self, new_size);
+    return __dzf_base_set_elem_size(self, new_size);
 }
 
 
@@ -99,7 +98,7 @@ DZF_PRIVATE
 static inline size_t
 __dzf_queue_elem_size(void *self)
 {
-    return __dzf_vec_get_elem_size(self);
+    return __dzf_base_get_elem_size(self);
 }
 
 
@@ -226,8 +225,7 @@ __dzf_queue_init(void *self,
     if (capacity <= DZF_QUEUE_ALLOC_SIZE)
         capacity = DZF_QUEUE_ALLOC_SIZE;
 
-    __dzf_queue_set_elem_size(q, elem_size);
-    __dzf_queue_set_capacity(q, capacity);
+    __dzf_base_init(q, 0, capacity, elem_size);
     __dzf_queue_set_front(q, -1);
     __dzf_queue_set_rear(q, -1);
     q->data = (void **)dzf_malloc(elem_size * capacity);
@@ -246,8 +244,7 @@ __dzf_queue_data_free(void *self)
         free(q->data);
         q->data = NULL;
     }
-    __dzf_queue_set_elem_size(q, 0);
-    __dzf_queue_set_capacity(q, 0);
+    __dzf_base_init(q, 0, 0, 0);
     __dzf_queue_set_front(q, -1);
     __dzf_queue_set_rear(q, -1);
 }

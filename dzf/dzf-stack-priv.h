@@ -29,12 +29,9 @@
 #   error "Only <dzf/dzf-stack.h> can be included directly!"
 #endif
 
-#include "dzf-util.h"
-
 #define DZF_VEC_USE_AS_PRIVATE
 #include "dzf-vector-priv.h"
-
-#define DZF_STACK_PARENT(parent) DZF_VEC_PARENT(parent)
+#undef  DZF_VEC_USE_AS_PRIVATE
 
 /* -- Type Definition -- */
 /*!
@@ -52,7 +49,7 @@
  */
 #define dzf_stack_t(T) \
     struct { \
-        __dzf_vec_parent_t parent; \
+        __dzf_base_t _unused1; \
         T *data; \
     }
 
@@ -68,7 +65,7 @@ static inline size_t
 __dzf_stack_set_alloc_size(void *self,
                            size_t new_size)
 {
-    return __dzf_vec_set_alloc_size(self, new_size);
+    return __dzf_base_set_alloc_size(self, new_size);
 }
 
 
@@ -76,7 +73,7 @@ DZF_PRIVATE
 static inline size_t
 __dzf_stack_alloc_size(void *self)
 {
-    return __dzf_vec_get_alloc_size(self);
+    return __dzf_base_get_alloc_size(self);
 }
 
 
@@ -85,7 +82,7 @@ static inline size_t
 __dzf_stack_set_elem_size(void *self,
                           size_t new_size)
 {
-    return __dzf_vec_set_elem_size(self, new_size);
+    return __dzf_base_set_elem_size(self, new_size);
 }
 
 
@@ -93,7 +90,7 @@ DZF_PRIVATE
 static inline size_t
 __dzf_stack_elem_size(void *self)
 {
-    return __dzf_vec_get_elem_size(self);
+    return __dzf_base_get_elem_size(self);
 }
 
 
@@ -102,7 +99,7 @@ static inline int
 __dzf_stack_set_top(void *self,
                     int new_top)
 {
-    return __dzf_vec_set_length(self, new_top);
+    return __dzf_base_set_length(self, new_top);
 }
 
 
@@ -110,7 +107,7 @@ DZF_PRIVATE
 static inline int
 __dzf_stack_top(void *self)
 {
-    return __dzf_vec_get_length(self);
+    return __dzf_base_get_length(self);
 }
 
 
@@ -194,7 +191,7 @@ DZF_PRIVATE
 DZF_PRIVATE
 #define __dzf_stack_pop(self) \
     ( \
-      (self)->data[DZF_STACK_PARENT(self)->length--] \
+      (self)->data[DZF_GET_BASE(self)->length--] \
     )
 
 

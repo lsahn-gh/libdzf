@@ -29,15 +29,9 @@
 #   error "Only <dzf/dzf-vector.h> can be included directly!"
 #endif
 
-#include "dzf-util.h"
-
-/* Not used in public */
-typedef struct __dzf_vec_parent {
-    int length;
-    size_t alloc_size;
-    size_t elem_size;
-} __dzf_vec_parent_t;
-#define DZF_VEC_PARENT(parent) ((__dzf_vec_parent_t*)parent)
+#define DZF_BASE_USE_AS_PRIVATE
+#include "dzf-base.h"
+#undef  DZF_BASE_USE_AS_PRIVATE
 
 /* -- Type Definition -- */
 /*!
@@ -55,7 +49,7 @@ typedef struct __dzf_vec_parent {
  */
 #define dzf_vec_t(T) \
     struct { \
-        __dzf_vec_parent_t _unused1; \
+        __dzf_base_t _unused1; \
         T *data; \
     }
 
@@ -71,13 +65,7 @@ static inline int
 __dzf_vec_set_length(void *self,
                      int length)
 {
-    __dzf_vec_parent_t *vec = self;
-
-    /* We don't care whether length is <= 0 */
-    if (vec->length != length)
-        vec->length = length;
-
-    return length;
+    return __dzf_base_set_length(self, length);
 }
 
 
@@ -85,9 +73,7 @@ DZF_PRIVATE
 static inline int
 __dzf_vec_get_length(void *self)
 {
-    __dzf_vec_parent_t *vec = self;
-
-    return vec->length;
+    return __dzf_base_get_length(self);
 }
 
 
@@ -96,12 +82,7 @@ static inline size_t
 __dzf_vec_set_alloc_size(void *self,
                          size_t new_size)
 {
-    __dzf_vec_parent_t *vec = self;
-
-    if (vec->alloc_size != new_size)
-        vec->alloc_size = new_size;
-
-    return new_size;
+    return __dzf_base_set_capacity(self, new_size);
 }
 
 
@@ -109,9 +90,7 @@ DZF_PRIVATE
 static inline size_t
 __dzf_vec_get_alloc_size(void *self)
 {
-    __dzf_vec_parent_t *vec = self;
-
-    return vec->alloc_size;
+    return __dzf_base_get_capacity(self);
 }
 
 
@@ -120,12 +99,7 @@ static inline size_t
 __dzf_vec_set_elem_size(void *self,
                         size_t new_size)
 {
-    __dzf_vec_parent_t *vec = self;
-
-    if (vec->elem_size != new_size)
-        vec->elem_size = new_size;
-
-    return new_size;
+    return __dzf_base_set_elem_size(self, new_size);
 }
 
 
@@ -133,9 +107,7 @@ DZF_PRIVATE
 static inline size_t
 __dzf_vec_get_elem_size(void *self)
 {
-    __dzf_vec_parent_t *vec = self;
-
-    return vec->elem_size;
+    return __dzf_base_get_elem_size(self);
 }
 
 
@@ -200,9 +172,7 @@ __dzf_vec_init(void *self,
 
     memset(vec, 0, sizeof(*vec));
 
-    __dzf_vec_set_length(vec, 0);
-    __dzf_vec_set_elem_size(vec, elem_size);
-    __dzf_vec_set_alloc_size(vec, capacity);
+    __dzf_base_init(vec, 0, capacity, elem_size);
     vec->data = dzf_malloc(elem_size * capacity);
 
     return 0;
@@ -219,9 +189,7 @@ __dzf_vec_data_free(void *self)
         free(vec->data);
         vec->data = NULL;
     }
-    __dzf_vec_set_length(vec, 0);
-    __dzf_vec_set_elem_size(vec, 0);
-    __dzf_vec_set_alloc_size(vec, 0);
+    __dzf_base_init(vec, 0, 0, 0);
 }
 
 
