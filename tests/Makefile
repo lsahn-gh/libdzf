@@ -1,5 +1,5 @@
 CC=cc
-CFLAGS=-Wall -Wpedantic -std=c99 -g -I./ -I../include -DDZF_DEBUG
+CFLAGS=-Wall -Wpedantic -std=c99 -g -I./ -I../ -DDZF_DEBUG
 
 LIBS=test_vector.c test_stack.c test_queue.c
 
