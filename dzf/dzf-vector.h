@@ -176,15 +176,15 @@ dzf_vec_is_empty(void *self)
  */
 DZF_PUBLIC
 static inline void *
-dzf_vec_get_pointer_at(void *self,
-                       size_t index)
+dzf_vec_get_ptr_at(void *self,
+                   size_t index)
 {
     __die(self);
 
     if (!__dzf_vec_index_validator(self, index))
         return NULL;
 
-    return __dzf_vec_get_pointer_at(self, index);
+    return __dzf_vec_get_ptr_at(self, index);
 }
 
 /*!
@@ -195,8 +195,8 @@ dzf_vec_get_pointer_at(void *self,
  * @return a pointer to the elem of the index.
  */
 DZF_PUBLIC
-#define dzf_vec_get_pointer(self, _idx) \
-    dzf_vec_get_pointer_at(self, _idx)
+#define dzf_vec_get_ptr(self, _idx) \
+    dzf_vec_get_ptr_at(self, _idx)
 
 /*!
  * Set a new value to the elem of the index.
@@ -336,7 +336,7 @@ DZF_PUBLIC
 #define dzf_vec_for_each(elem, self, idx_var) \
     for (idx_var = 0; \
          idx_var < __dzf_vec_get_length(self) && \
-         ( elem = __dzf_vec_get_pointer_at(self, idx_var), 1 ); \
+         ( elem = __dzf_vec_get_ptr_at(self, idx_var), 1 ); \
          idx_var++)
 
 #endif /* DZF_VEC_H */

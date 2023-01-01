@@ -195,8 +195,8 @@ __dzf_vec_data_free(void *self)
 
 DZF_PRIVATE
 static inline void *
-__dzf_vec_get_pointer_at(void *self,
-                         size_t index)
+__dzf_vec_get_ptr_at(void *self,
+                     size_t index)
 {
     __dzf_vec_priv_void_t *vec = self;
 
@@ -216,8 +216,8 @@ DZF_PRIVATE
 
 DZF_PRIVATE
 #define __dzf_vec_self_memmove(self, _idx, _direction) \
-   memmove(__dzf_vec_get_pointer_at(self, _idx _direction), \
-           __dzf_vec_get_pointer_at(self, _idx), \
+   memmove(__dzf_vec_get_ptr_at(self, _idx _direction), \
+           __dzf_vec_get_ptr_at(self, _idx), \
            __dzf_vec_get_length(self) - _idx)
 
 

@@ -143,7 +143,7 @@ vector_user_struct_type(void)
         printf("Name: %s, Age: %d\n", elem->name, elem->age);
     }
 
-    user_t *temp = dzf_vec_get_pointer(&users, 0);
+    user_t *temp = dzf_vec_get_ptr(&users, 0);
     temp->age = 10;
 
     user_t temp2 = dzf_vec_get_value(&users, 0);
