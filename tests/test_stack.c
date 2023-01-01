@@ -40,7 +40,7 @@ stack_main(void)
 
 /* Test for string type with DYNAMIC_STACK */
 #define DZF_STACK_DYNAMIC_GROW
-#include "dzf/dzf-stack.h"
+#include <dzf/dzf-stack.h>
 
 static void stack_str_print(char **str, ...);
 static void stack_str_free_all(char **str, ...);

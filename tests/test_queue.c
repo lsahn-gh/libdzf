@@ -23,7 +23,8 @@
  */
 
 #include "test.h"
-#include "dzf/dzf-queue.h"
+
+#include <dzf/dzf-queue.h>
 
 static void queue_int_type(void);
 static void queue_func_ptr_type(void);

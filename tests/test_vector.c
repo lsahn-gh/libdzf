@@ -23,7 +23,8 @@
  */
 
 #include "test.h"
-#include "dzf/dzf-vector.h"
+
+#include <dzf/dzf-vector.h>
 
 #include <float.h>
 #include <math.h>
