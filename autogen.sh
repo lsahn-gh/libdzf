@@ -1,3 +1,3 @@
 #!/bin/sh
 
-autoreconf --verbose --install --force
+autoreconf --verbose --install --force && ./configure

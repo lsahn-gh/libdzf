@@ -9,7 +9,6 @@ libdzf is a header-only data structure C library based on C99 std, template-like
 ## Build
 ```sh
 $ ./autogen.sh
-$ ./configure
 $ make
 ```
 
