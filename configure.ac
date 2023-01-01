@@ -1,5 +1,4 @@
 AC_INIT([libdzf], [0.4])
-AC_CONFIG_HEADERS([dzf/config.h])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
