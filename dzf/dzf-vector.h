@@ -199,6 +199,66 @@ DZF_PUBLIC
     dzf_vec_get_ptr_at(self, _idx)
 
 /*!
+ * Get a pointer of an elem at the first in the instance.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @return NULL if empty, otherwise a pointer to the first elem.
+ */
+DZF_PUBLIC
+static inline void *
+dzf_vec_get_ptr_first(void *self)
+{
+    __die(self);
+
+    if (__dzf_vec_is_empty(self))
+        return NULL;
+
+    return __dzf_vec_get_ptr_first(self);
+}
+
+/*!
+ * Get a pointer of an elem at the last in the instance.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @return NULL if empty, otherwise a pointer to the last elem.
+ */
+DZF_PUBLIC
+static inline void *
+dzf_vec_get_ptr_last(void *self)
+{
+    __die(self);
+
+    if (__dzf_vec_is_empty(self))
+        return NULL;
+
+    return __dzf_vec_get_ptr_last(self);
+}
+
+/*!
+ * Get the next pointer of the elem in the instance.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param elem: an element in the instance.
+ * @return NULL if elem is the last one, otherwise a pointer to the next.
+ */
+DZF_PUBLIC
+#define dzf_vec_get_ptr_next_by(self, elem) \
+    (__die(self), (void*)elem == __dzf_vec_get_ptr_last(self) \
+                  ? NULL : __dzf_vec_get_ptr_next_by(elem))
+
+/*!
+ * Get the previous pointer of the elem in the instance.
+ *
+ * @param self: a vector instance of dzf_vec_t(T).
+ * @param elem: an element in the instance.
+ * @return NULL if elem is the first one, otherwise a pointer to the previous.
+ */
+DZF_PUBLIC
+#define dzf_vec_get_ptr_prev_by(self, elem) \
+    (__die(self), (void*)elem == __dzf_vec_get_ptr_first(self) \
+                  ? NULL : __dzf_vec_get_ptr_prev_by(elem))
+
+/*!
  * Set a new value to the elem of the index.
  *
  * @param self: a vector instance of dzf_vec_t(T).
@@ -338,5 +398,18 @@ DZF_PUBLIC
          idx_var < __dzf_vec_get_length(self) && \
          ( elem = __dzf_vec_get_ptr_at(self, idx_var), 1 ); \
          idx_var++)
+
+/*!
+ * (New) Walk through all elements in dzf_vec_t(T).
+ *
+ * @param elem: a pointer to the type of element of dzf_vec_t(T).
+ * @param self: a vector instance of dzf_vec_t(T).
+ */
+DZF_PUBLIC
+#define dzf_vec_for_each_ng(elem, self) \
+    for (elem = (__dzf_vec_is_empty(self) \
+                 ? NULL : __dzf_vec_get_ptr_first(self)); \
+         elem && (void*)elem <= __dzf_vec_get_ptr_last(self); \
+         elem = __dzf_vec_get_ptr_next_by(elem))
 
 #endif /* DZF_VEC_H */

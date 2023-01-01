@@ -205,6 +205,32 @@ __dzf_vec_get_ptr_at(void *self,
 
 
 DZF_PRIVATE
+static inline void *
+__dzf_vec_get_ptr_first(void *self)
+{
+    return __dzf_vec_get_ptr_at(self, 0);
+}
+
+
+DZF_PRIVATE
+static inline void *
+__dzf_vec_get_ptr_last(void *self)
+{
+    return __dzf_vec_get_ptr_at(self, __dzf_vec_get_length(self) - 1);
+}
+
+
+DZF_PRIVATE
+#define __dzf_vec_get_ptr_next_by(elem) \
+    (elem + 1) /* DO NOT use increament operator '++' */
+
+
+DZF_PRIVATE
+#define __dzf_vec_get_ptr_prev_by(elem) \
+    (elem - 1) /* DO NOT use decreament operator '--' */
+
+
+DZF_PRIVATE
 #define __dzf_vec_get_value_at(self, _idx) \
     ((self)->data[_idx])
 
