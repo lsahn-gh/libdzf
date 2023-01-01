@@ -85,7 +85,6 @@ vector_double_type(void)
     typedef dzf_vec_t(double) vec_double_t;
     vec_double_t dvec;
     double *elem;
-    size_t i;
 
     dzf_vec_new(&dvec, sizeof(double));
     assert(dzf_vec_get_length(&dvec) == 0);
@@ -95,19 +94,19 @@ vector_double_type(void)
     dzf_vec_add_tail(&dvec, 3.14);
     dzf_vec_add_tail(&dvec, 1.0);
     
-    dzf_vec_for_each(elem, &dvec, i) {
+    dzf_vec_for_each_ng(elem, &dvec) {
         printf("%.2lf ", *elem);
     }
     putchar('\n');
 
     assert(dzf_vec_get_length(&dvec) == 3);
 
-    dzf_vec_for_each(elem, &dvec, i) {
+    dzf_vec_for_each_ng(elem, &dvec) {
         *elem += 1.0;
     }
     assert(fabs(dzf_vec_get_value(&dvec, 0) - 10.8) < DBL_EPSILON);
 
-    dzf_vec_for_each(elem, &dvec, i) {
+    dzf_vec_for_each_ng(elem, &dvec) {
         printf("%.2lf ", *elem);
     }
     putchar('\n');
@@ -128,7 +127,6 @@ vector_user_struct_type(void)
     typedef dzf_vec_t(user_t) vec_user_t;
     vec_user_t users;
     user_t *elem;
-    size_t i;
 
     dzf_vec_new_with(&users, sizeof(vec_user_t), 32);
     assert(dzf_vec_get_capacity(&users) == 32);
@@ -139,7 +137,7 @@ vector_user_struct_type(void)
 
     dzf_vec_add_tail(&users, jeremy);
 
-    dzf_vec_for_each(elem, &users, i) {
+    dzf_vec_for_each_ng(elem, &users) {
         printf("Name: %s, Age: %d\n", elem->name, elem->age);
     }
 
