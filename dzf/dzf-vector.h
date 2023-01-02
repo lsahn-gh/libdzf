@@ -243,8 +243,7 @@ dzf_vec_get_ptr_last(void *self)
  */
 DZF_PUBLIC
 #define dzf_vec_get_ptr_next_by(self, elem) \
-    (__die(self), (void*)elem == __dzf_vec_get_ptr_last(self) \
-                  ? NULL : __dzf_vec_get_ptr_next_by(elem))
+    (__die(self), __dzf_vec_get_ptr_next_by(self, elem))
 
 /*!
  * Get the previous pointer of the elem in the instance.
@@ -255,8 +254,7 @@ DZF_PUBLIC
  */
 DZF_PUBLIC
 #define dzf_vec_get_ptr_prev_by(self, elem) \
-    (__die(self), (void*)elem == __dzf_vec_get_ptr_first(self) \
-                  ? NULL : __dzf_vec_get_ptr_prev_by(elem))
+    (__die(self), __dzf_vec_get_ptr_prev_by(self, elem))
 
 /*!
  * Set a new value to the elem of the index.
@@ -407,9 +405,8 @@ DZF_PUBLIC
  */
 DZF_PUBLIC
 #define dzf_vec_for_each_ng(elem, self) \
-    for (elem = (__dzf_vec_is_empty(self) \
-                 ? NULL : __dzf_vec_get_ptr_first(self)); \
-         elem && (void*)elem <= __dzf_vec_get_ptr_last(self); \
-         elem = __dzf_vec_get_ptr_next_by(elem))
+    for (elem = dzf_vec_get_ptr_first(self); \
+         elem; \
+         elem = __dzf_vec_get_ptr_next_by(self, elem))
 
 #endif /* DZF_VEC_H */

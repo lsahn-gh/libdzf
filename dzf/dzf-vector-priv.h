@@ -221,13 +221,15 @@ __dzf_vec_get_ptr_last(void *self)
 
 
 DZF_PRIVATE
-#define __dzf_vec_get_ptr_next_by(elem) \
-    (elem + 1) /* DO NOT use increament operator '++' */
+#define __dzf_vec_get_ptr_next_by(self, elem) \
+    ((void*)elem == __dzf_vec_get_ptr_last(self) \
+     ? NULL : (elem + 1))
 
 
 DZF_PRIVATE
-#define __dzf_vec_get_ptr_prev_by(elem) \
-    (elem - 1) /* DO NOT use decreament operator '--' */
+#define __dzf_vec_get_ptr_prev_by(self, elem) \
+    ((void*)elem == __dzf_vec_get_ptr_first(self) \
+     ? NULL : (elem - 1))
 
 
 DZF_PRIVATE
